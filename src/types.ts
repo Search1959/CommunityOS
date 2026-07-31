@@ -21,6 +21,23 @@ export type UserRole =
   | 'Member'
   | 'Public Citizen';
 
+export interface UserCredential {
+  id: string;
+  name: string;
+  email: string;
+  username: string;
+  passwordHash: string; // Plaintext for demo login
+  role: UserRole;
+  orgId: string; // 'all' for System Admin
+  orgName: string;
+  status: 'Active' | 'Suspended' | 'Pending Reset';
+  hierarchyLevel: 1 | 2 | 3 | 4 | 5; // 1: System Admin, 2: Org Admin, 3: Exec Officer, 4: Member, 5: Public
+  lastLogin?: string;
+  createdAt: string;
+  avatarUrl?: string;
+  phone?: string;
+}
+
 export interface Organization {
   id: string;
   slug: string; // e.g. 'durgapuja', 'jaiswalsamaj', 'shreeram-trust', 'model-school', 'sunrise-club'
@@ -70,6 +87,7 @@ export interface Member {
     phone: string;
     relation: string;
   };
+  committeeName?: string;
   qrCodeData: string;
 }
 
@@ -178,7 +196,7 @@ export interface EventItem {
   volunteersAssigned: number;
   budget: number;
   bannerUrl: string;
-  galleryImages: string[];
+  galleryImages?: string[];
   status: 'Upcoming' | 'Ongoing' | 'Completed';
 }
 

@@ -12,9 +12,13 @@ import {
   Sparkles,
   ChevronDown,
   PhoneCall,
-  Download
+  Download,
+  Menu,
+  Plus,
+  LogIn,
+  KeyRound
 } from 'lucide-react';
-import { Organization, UserRole } from '../types';
+import { Organization, UserCredential, UserRole } from '../types';
 
 interface NavbarProps {
   organizations: Organization[];
@@ -22,13 +26,16 @@ interface NavbarProps {
   onSelectOrg: (org: Organization) => void;
   currentRole: UserRole;
   onChangeRole: (role: UserRole) => void;
-  isDarkMode: boolean;
-  onToggleDarkMode: () => void;
+  currentUserCredential?: UserCredential;
+  onOpenLoginModal?: () => void;
+  isDarkMode?: boolean;
+  onToggleDarkMode?: () => void;
   onOpenAIChat: () => void;
-  onOpenQRScanner: () => void;
-  onNavigateModule: (moduleKey: string) => void;
-  searchQuery: string;
-  onSearchChange: (q: string) => void;
+  onOpenQRScanner?: () => void;
+  onNavigateModule?: (moduleKey: string) => void;
+  searchQuery?: string;
+  onSearchChange?: (q: string) => void;
+  onOpenMobileSidebar?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -37,13 +44,16 @@ export const Navbar: React.FC<NavbarProps> = ({
   onSelectOrg,
   currentRole,
   onChangeRole,
-  isDarkMode,
+  currentUserCredential,
+  onOpenLoginModal,
+  isDarkMode = true,
   onToggleDarkMode,
   onOpenAIChat,
   onOpenQRScanner,
   onNavigateModule,
-  searchQuery,
+  searchQuery = '',
   onSearchChange,
+  onOpenMobileSidebar,
 }) => {
   const [showOrgDropdown, setShowOrgDropdown] = useState(false);
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
@@ -66,13 +76,26 @@ export const Navbar: React.FC<NavbarProps> = ({
 
   return (
     <header className="sticky top-0 z-40 w-full border-b border-slate-200 dark:border-slate-800 bg-white/95 dark:bg-slate-900/95 backdrop-blur-md transition-colors">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
+      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-3">
         
-        {/* Brand & Multi-Tenant Selector */}
-        <div className="flex items-center gap-3">
+        {/* Mobile Hamburger & Brand & Multi-Tenant Selector */}
+        <div className="flex items-center gap-2 sm:gap-3">
+          
+          {/* Mobile Sidebar Toggle Button */}
+          {onOpenMobileSidebar && (
+            <button
+              id="btn-open-mobile-sidebar"
+              onClick={onOpenMobileSidebar}
+              className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden transition-colors"
+              title="Open Navigation Menu"
+            >
+              <Menu className="w-5 h-5" />
+            </button>
+          )}
+
           <div 
-            onClick={() => onNavigateModule('dashboard')}
-            className="flex items-center gap-2.5 cursor-pointer group"
+            onClick={() => onNavigateModule?.('dashboard')}
+            className="flex items-center gap-2 cursor-pointer group"
           >
             <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold shadow-sm shadow-indigo-600/30 group-hover:scale-105 transition-transform">
               <span className="text-sm font-black">D</span>
@@ -132,6 +155,18 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </button>
                   ))}
                 </div>
+                <div className="pt-2 mt-2 border-t border-slate-200 dark:border-slate-800">
+                  <button
+                    onClick={() => {
+                      setShowOrgDropdown(false);
+                      onNavigateModule?.('super-admin');
+                    }}
+                    className="w-full py-2 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+                  >
+                    <Plus className="w-3.5 h-3.5" />
+                    <span>+ Onboard New Organization Tenant</span>
+                  </button>
+                </div>
               </div>
             )}
           </div>
@@ -186,6 +221,28 @@ export const Navbar: React.FC<NavbarProps> = ({
 
           {/* Role Switcher & User Profile */}
           <div className="relative flex items-center gap-2 pl-2 border-l border-slate-200 dark:border-slate-800">
+            {/* Login / Account Trigger Button */}
+            {onOpenLoginModal && (
+              <button
+                id="btn-nav-login-modal"
+                onClick={onOpenLoginModal}
+                className="flex items-center gap-2 px-2.5 py-1.5 rounded-xl bg-amber-50 dark:bg-amber-950/40 border border-amber-200 dark:border-amber-800 hover:bg-amber-100 dark:hover:bg-amber-900/50 transition-all text-xs font-bold text-amber-900 dark:text-amber-300 shadow-sm"
+                title="Switch User Credential / Login Hierarchy"
+              >
+                <KeyRound className="w-3.5 h-3.5 text-amber-600 dark:text-amber-400" />
+                {currentUserCredential ? (
+                  <div className="hidden md:flex items-center gap-1.5">
+                    <span className="truncate max-w-[90px]">{currentUserCredential.name.split(' ')[0]}</span>
+                    <span className="text-[9px] px-1.5 py-0.2 rounded bg-amber-200 dark:bg-amber-900 text-amber-900 dark:text-amber-200 font-extrabold">
+                      L{currentUserCredential.hierarchyLevel}
+                    </span>
+                  </div>
+                ) : (
+                  <span className="hidden sm:inline">System Login</span>
+                )}
+              </button>
+            )}
+
             <button
               id="btn-role-switcher"
               onClick={() => setShowRoleDropdown(!showRoleDropdown)}
@@ -196,16 +253,20 @@ export const Navbar: React.FC<NavbarProps> = ({
               <ChevronDown className="w-3 h-3 text-indigo-500" />
             </button>
 
-            <div className="hidden xl:flex items-center gap-2">
-              <div className="w-8 h-8 rounded-full bg-indigo-100 dark:bg-indigo-950 border border-indigo-200 dark:border-indigo-800 flex items-center justify-center font-bold text-xs text-indigo-700 dark:text-indigo-300">
-                AK
+            {currentUserCredential?.avatarUrl && (
+              <div className="hidden xl:flex items-center gap-2">
+                <img
+                  src={currentUserCredential.avatarUrl}
+                  alt={currentUserCredential.name}
+                  className="w-8 h-8 rounded-full border border-amber-500/40 object-cover shadow-sm"
+                />
               </div>
-            </div>
+            )}
 
             {showRoleDropdown && (
               <div className="absolute right-0 top-10 mt-2 w-48 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-xl p-1.5 z-50">
                 <div className="px-2 py-1 text-[10px] font-bold uppercase tracking-wider text-slate-400">
-                  Switch Role Preview
+                  Quick Role Switcher
                 </div>
                 <div className="space-y-0.5 max-h-56 overflow-y-auto">
                   {rolesList.map((r) => (

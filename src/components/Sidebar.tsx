@@ -56,7 +56,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { key: 'blood-bank', label: 'Emergency Blood Bank', icon: Droplet },
     { key: 'medical-camp', label: 'Medical Camp Portal', icon: Stethoscope },
     { key: 'businesses', label: 'Business & Jobs Portal', icon: Briefcase },
-    { key: 'govt-schemes', label: 'Government Schemes', icon: Landmark },
+    { key: 'govt-schemes', label: 'Citizen Service Centre (CSC)', icon: Landmark, badge: 'Govt' },
     { key: 'notifications', label: 'WhatsApp & Alert Centre', icon: MessageSquareShare },
     { key: 'reports', label: 'Export Reports', icon: BarChart3 },
     { key: 'super-admin', label: 'Super Admin SaaS Panel', icon: ShieldCheck },

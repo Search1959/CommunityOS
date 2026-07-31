@@ -22,6 +22,7 @@ import { NotificationsModule } from './components/NotificationsModule';
 import { ReportsModule } from './components/ReportsModule';
 import { SuperAdminModule } from './components/SuperAdminModule';
 import { QRScannerModal } from './components/QRScannerModal';
+import { LoginModal } from './components/LoginModal';
 
 import { subscribeCollection, saveToFirestore } from './lib/firebase';
 
@@ -37,6 +38,7 @@ import {
   INITIAL_EVENTS,
   INITIAL_STUDENTS,
   INITIAL_VAULT_DOCS,
+  INITIAL_USER_CREDENTIALS,
 } from './data/mockData';
 
 import {
@@ -49,6 +51,7 @@ import {
   FinanceTransaction,
   EventItem,
   VaultDocument,
+  UserCredential,
 } from './types';
 
 export default function App() {
@@ -59,6 +62,11 @@ export default function App() {
   const [isMobileSidebarOpen, setIsMobileSidebarOpen] = useState<boolean>(false);
   const [showQRScanner, setShowQRScanner] = useState<boolean>(false);
 
+  // Authentication & System Credentials State
+  const [userCredentials, setUserCredentials] = useState<UserCredential[]>(INITIAL_USER_CREDENTIALS);
+  const [currentUserCredential, setCurrentUserCredential] = useState<UserCredential>(INITIAL_USER_CREDENTIALS[0]);
+  const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
+
   // App Master Datasets
   const [members, setMembers] = useState<Member[]>(INITIAL_MEMBERS);
   const [officeBearers] = useState(INITIAL_OFFICE_BEARERS);
@@ -67,7 +75,7 @@ export default function App() {
   const [applications, setApplications] = useState<SchemeApplication[]>(INITIAL_SCHEME_APPLICATIONS);
   const [donations, setDonations] = useState<Donation[]>(INITIAL_DONATIONS);
   const [transactions, setTransactions] = useState<FinanceTransaction[]>(INITIAL_FINANCE_TRANSACTIONS);
-  const [events] = useState<EventItem[]>(INITIAL_EVENTS);
+  const [events, setEvents] = useState<EventItem[]>(INITIAL_EVENTS);
   const [students] = useState(INITIAL_STUDENTS);
   const [vaultDocs, setVaultDocs] = useState<VaultDocument[]>(INITIAL_VAULT_DOCS);
 
@@ -126,13 +134,34 @@ export default function App() {
     saveToFirestore('members', newMem);
   };
 
+  const handleUpdateMember = (updatedMem: Member) => {
+    setMembers(members.map(m => m.id === updatedMem.id ? updatedMem : m));
+    saveToFirestore('members', updatedMem);
+  };
+
+  const handleDeleteMember = (memberId: string) => {
+    setMembers(members.filter(m => m.id !== memberId));
+  };
+
   const handleAddMeeting = (newM: Meeting) => {
     setMeetings([newM, ...meetings]);
+  };
+
+  const handleUpdateMeeting = (updatedM: Meeting) => {
+    setMeetings(meetings.map(m => m.id === updatedM.id ? updatedM : m));
+  };
+
+  const handleDeleteMeeting = (meetingId: string) => {
+    setMeetings(meetings.filter(m => m.id !== meetingId));
   };
 
   const handleApplyScheme = (newApp: SchemeApplication) => {
     setApplications([newApp, ...applications]);
     saveToFirestore('applications', newApp);
+  };
+
+  const handleDeleteApplication = (appId: string) => {
+    setApplications(applications.filter(a => a.id !== appId));
   };
 
   const handleApproveApp = (appId: string) => {
@@ -160,9 +189,35 @@ export default function App() {
     saveToFirestore('organizations', updatedOrg);
   };
 
+  const handleUpdateDonation = (updatedDon: Donation) => {
+    setDonations(donations.map(d => d.id === updatedDon.id ? updatedDon : d));
+    saveToFirestore('donations', updatedDon);
+  };
+
+  const handleDeleteDonation = (donationId: string) => {
+    setDonations(donations.filter(d => d.id !== donationId));
+  };
+
   const handleAddTransaction = (newTx: FinanceTransaction) => {
     setTransactions([newTx, ...transactions]);
     saveToFirestore('transactions', newTx);
+  };
+
+  const handleUpdateTransaction = (updatedTx: FinanceTransaction) => {
+    setTransactions(transactions.map(t => t.id === updatedTx.id ? updatedTx : t));
+    saveToFirestore('transactions', updatedTx);
+  };
+
+  const handleDeleteTransaction = (txId: string) => {
+    setTransactions(transactions.filter(t => t.id !== txId));
+  };
+
+  const handleUpdateEvent = (updatedEvt: EventItem) => {
+    setEvents(events.map(e => e.id === updatedEvt.id ? updatedEvt : e));
+  };
+
+  const handleDeleteEvent = (eventId: string) => {
+    setEvents(events.filter(e => e.id !== eventId));
   };
 
   // Backend API Call for OCR Document Extraction
@@ -252,6 +307,37 @@ export default function App() {
     }
   };
 
+  // Credential Management Handlers
+  const handleLoginSuccess = (cred: UserCredential) => {
+    setCurrentUserCredential(cred);
+    setShowLoginModal(false);
+    // Sync UI role preview if available
+    if (['Super Admin'].includes(cred.role)) {
+      setCurrentRole('President / Committee Exec');
+    } else if (['Member', 'Student', 'Parent'].includes(cred.role)) {
+      setCurrentRole('General Member');
+    } else if (['Public Citizen'].includes(cred.role)) {
+      setCurrentRole('Citizen Public');
+    }
+  };
+
+  const handleAddCredential = (newCred: UserCredential) => {
+    setUserCredentials((prev) => [newCred, ...prev]);
+    saveToFirestore('userCredentials', newCred);
+  };
+
+  const handleUpdateCredential = (updatedCred: UserCredential) => {
+    setUserCredentials((prev) => prev.map((c) => (c.id === updatedCred.id ? updatedCred : c)));
+    saveToFirestore('userCredentials', updatedCred);
+    if (currentUserCredential.id === updatedCred.id) {
+      setCurrentUserCredential(updatedCred);
+    }
+  };
+
+  const handleDeleteCredential = (credId: string) => {
+    setUserCredentials((prev) => prev.filter((c) => c.id !== credId));
+  };
+
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
       
@@ -262,6 +348,8 @@ export default function App() {
         onSelectOrg={handleSelectOrg}
         currentRole={currentRole}
         onChangeRole={setCurrentRole}
+        currentUserCredential={currentUserCredential}
+        onOpenLoginModal={() => setShowLoginModal(true)}
         onOpenAIChat={() => setActiveModule('ai-chat')}
         onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
       />
@@ -300,7 +388,10 @@ export default function App() {
             <MembershipModule
               members={members}
               activeOrg={activeOrg}
+              organizations={organizations}
               onAddMember={handleAddMember}
+              onUpdateMember={handleUpdateMember}
+              onDeleteMember={handleDeleteMember}
             />
           )}
 
@@ -310,6 +401,8 @@ export default function App() {
               officeBearers={officeBearers}
               activeOrg={activeOrg}
               onAddMeeting={handleAddMeeting}
+              onUpdateMeeting={handleUpdateMeeting}
+              onDeleteMeeting={handleDeleteMeeting}
             />
           )}
 
@@ -321,6 +414,7 @@ export default function App() {
               onApplyScheme={handleApplyScheme}
               onApproveApp={handleApproveApp}
               onRejectApp={handleRejectApp}
+              onDeleteApplication={handleDeleteApplication}
             />
           )}
 
@@ -329,6 +423,8 @@ export default function App() {
               donations={donations}
               activeOrg={activeOrg}
               onAddDonation={handleAddDonation}
+              onUpdateDonation={handleUpdateDonation}
+              onDeleteDonation={handleDeleteDonation}
             />
           )}
 
@@ -337,6 +433,8 @@ export default function App() {
               transactions={transactions}
               activeOrg={activeOrg}
               onAddTransaction={handleAddTransaction}
+              onUpdateTransaction={handleUpdateTransaction}
+              onDeleteTransaction={handleDeleteTransaction}
             />
           )}
 
@@ -345,6 +443,8 @@ export default function App() {
               events={events}
               activeOrg={activeOrg}
               onOpenQRScanner={() => setShowQRScanner(true)}
+              onUpdateEvent={handleUpdateEvent}
+              onDeleteEvent={handleDeleteEvent}
             />
           )}
 
@@ -411,6 +511,10 @@ export default function App() {
               activeOrg={activeOrg}
               onSelectOrg={handleSelectOrg}
               onCreateOrg={handleCreateOrg}
+              userCredentials={userCredentials}
+              onAddCredential={handleAddCredential}
+              onUpdateCredential={handleUpdateCredential}
+              onDeleteCredential={handleDeleteCredential}
             />
           )}
         </main>
@@ -419,6 +523,16 @@ export default function App() {
 
       {/* QR Code Gate Scanner Modal */}
       {showQRScanner && <QRScannerModal onClose={() => setShowQRScanner(false)} />}
+
+      {/* System Login & Credentials Switcher Modal */}
+      {showLoginModal && (
+        <LoginModal
+          userCredentials={userCredentials}
+          currentUserCredential={currentUserCredential}
+          onLoginSuccess={handleLoginSuccess}
+          onClose={() => setShowLoginModal(false)}
+        />
+      )}
 
     </div>
   );

@@ -28,35 +28,45 @@ export const OrgProfileModule: React.FC<OrgProfileModuleProps> = ({
     <div className="space-y-6">
       
       {/* Banner & Header */}
-      <div className="relative rounded-2xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
-        <div className="h-48 w-full relative overflow-hidden bg-slate-800">
+      <div className="relative rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
+        {/* Top Banner Area */}
+        <div className="h-44 sm:h-52 w-full relative bg-slate-900 overflow-hidden">
           <img 
             src={activeOrg.bannerUrl} 
-            alt={activeOrg.name} 
-            className="w-full h-full object-cover opacity-80"
+            alt="" 
+            className="w-full h-full object-cover opacity-75"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950 via-slate-950/40 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+          
+          {/* Top badges floating over banner */}
+          <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
+            <span className="px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-rose-600 text-white shadow-md">
+              {activeOrg.type}
+            </span>
+            <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-slate-950/80 text-slate-200 border border-white/10 backdrop-blur-sm">
+              Reg: {activeOrg.regNo}
+            </span>
+          </div>
         </div>
 
-        <div className="p-6 relative -mt-16 flex flex-col sm:flex-row items-start sm:items-end justify-between gap-4">
-          <div className="flex items-end gap-4">
-            <div className="w-24 h-24 rounded-2xl border-4 border-white dark:border-slate-900 bg-slate-100 dark:bg-slate-800 overflow-hidden shadow-xl shrink-0">
-              <img src={activeOrg.logoUrl} alt="Logo" className="w-full h-full object-cover" />
+        {/* Info & Logo Bar sitting over card background */}
+        <div className="px-6 pb-6 relative flex flex-col md:flex-row md:items-end justify-between gap-4 -mt-12 sm:-mt-14 z-10">
+          <div className="flex flex-col sm:flex-row sm:items-end gap-4">
+            <div className="w-24 h-24 sm:w-28 sm:h-28 rounded-2xl border-4 border-white dark:border-slate-900 bg-white dark:bg-slate-800 overflow-hidden shadow-2xl shrink-0">
+              <img src={activeOrg.logoUrl} alt="Organization Logo" className="w-full h-full object-cover" />
             </div>
-            <div className="text-white">
-              <div className="flex items-center gap-2 mb-1">
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold uppercase tracking-wider bg-rose-500 text-white">
-                  {activeOrg.type}
-                </span>
-                <span className="text-xs text-slate-300 font-mono">Reg: {activeOrg.regNo}</span>
-              </div>
-              <h1 className="text-2xl sm:text-3xl font-extrabold tracking-tight">
+            <div className="space-y-1.5 pt-2 sm:pt-0">
+              <h1 className="text-2xl sm:text-3xl font-black text-slate-900 dark:text-white tracking-tight leading-tight">
                 {activeOrg.name}
               </h1>
-              <p className="text-xs text-slate-300 flex items-center gap-1 mt-0.5">
-                <Globe className="w-3.5 h-3.5 text-amber-400" />
-                <span>{activeOrg.websiteDomain}</span>
-              </p>
+              <div className="flex flex-wrap items-center gap-3 text-xs text-slate-600 dark:text-slate-400 font-medium">
+                <span className="flex items-center gap-1.5 font-bold text-rose-600 dark:text-rose-400">
+                  <Globe className="w-3.5 h-3.5" />
+                  <span>{activeOrg.websiteDomain}</span>
+                </span>
+                <span>•</span>
+                <span>{activeOrg.address}</span>
+              </div>
             </div>
           </div>
 
@@ -64,7 +74,7 @@ export const OrgProfileModule: React.FC<OrgProfileModuleProps> = ({
             href={`https://${activeOrg.websiteDomain}`}
             target="_blank"
             rel="noreferrer"
-            className="px-4 py-2 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs flex items-center gap-1.5 transition-all shadow-md"
+            className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md shrink-0"
           >
             <span>Visit Public Website</span>
             <ExternalLink className="w-3.5 h-3.5" />

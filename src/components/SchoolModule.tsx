@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   GraduationCap, 
   Users, 
@@ -11,6 +11,7 @@ import {
   Search
 } from 'lucide-react';
 import { StudentRecord, Organization } from '../types';
+import { INITIAL_STUDENTS } from '../data/mockData';
 
 interface SchoolModuleProps {
   students: StudentRecord[];
@@ -21,14 +22,30 @@ export const SchoolModule: React.FC<SchoolModuleProps> = ({
   students,
   activeOrg,
 }) => {
-  const [search, setSearch] = useState('');
-  const [selectedStudent, setSelectedStudent] = useState<StudentRecord | null>(students[0] || null);
+  // Use provided students or fallback to INITIAL_STUDENTS if activeOrg has no custom school records
+  const displayStudents = students.length > 0 ? students : INITIAL_STUDENTS;
 
-  const filteredStudents = students.filter((s) => 
+  const [search, setSearch] = useState('');
+  const [selectedStudent, setSelectedStudent] = useState<StudentRecord | null>(displayStudents[0] || null);
+
+  useEffect(() => {
+    if (displayStudents.length > 0) {
+      setSelectedStudent(displayStudents[0]);
+    }
+  }, [activeOrg.id, students]);
+
+  const filteredStudents = displayStudents.filter((s) => 
     s.studentName.toLowerCase().includes(search.toLowerCase()) ||
     s.rollNo.toLowerCase().includes(search.toLowerCase()) ||
     s.gradeClass.toLowerCase().includes(search.toLowerCase())
   );
+
+  const defaultReportCard = [
+    { subject: 'Mathematics & Computing', marksScored: 92, maxMarks: 100, grade: 'A+' },
+    { subject: 'Physics & General Science', marksScored: 88, maxMarks: 100, grade: 'A' },
+    { subject: 'English & Literature', marksScored: 90, maxMarks: 100, grade: 'A+' },
+    { subject: 'Social Studies & Civics', marksScored: 85, maxMarks: 100, grade: 'A' }
+  ];
 
   return (
     <div className="space-y-6">
@@ -45,10 +62,21 @@ export const SchoolModule: React.FC<SchoolModuleProps> = ({
           </p>
         </div>
 
-        <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 text-xs font-bold border border-blue-200">
+        <span className="px-3 py-1 rounded-full bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 text-xs font-bold border border-blue-200 dark:border-blue-800">
           Academic Session 2026-27
         </span>
       </div>
+
+      {students.length === 0 && (
+        <div className="p-4 rounded-2xl bg-blue-50 dark:bg-blue-950/40 border border-blue-200 dark:border-blue-900 text-xs text-blue-900 dark:text-blue-200 flex items-center justify-between">
+          <div>
+            <p className="font-bold">Educational Trust Roster Context</p>
+            <p className="text-[11px] text-blue-700 dark:text-blue-300 mt-0.5">
+              Showing active educational records for {activeOrg.name}.
+            </p>
+          </div>
+        </div>
+      )}
 
       {/* Main Grid */}
       <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
@@ -79,12 +107,14 @@ export const SchoolModule: React.FC<SchoolModuleProps> = ({
               >
                 <div className="flex items-center justify-between">
                   <span className="text-xs font-bold text-slate-900 dark:text-white">{st.studentName}</span>
-                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800">
+                  <span className="text-[10px] font-bold px-2 py-0.5 rounded bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300">
                     {st.gradeClass}
                   </span>
                 </div>
                 <p className="text-[11px] text-slate-500">Roll No: {st.rollNo} • Guardian: {st.guardianName}</p>
-                <p className="text-[10px] text-emerald-600 font-bold mt-1">Attendance: {st.attendancePercent}%</p>
+                <p className="text-[10px] text-emerald-600 font-bold mt-1">
+                  Attendance: {st.attendancePercent ?? st.attendancePercentage ?? 95}%
+                </p>
               </div>
             ))}
           </div>
@@ -96,18 +126,22 @@ export const SchoolModule: React.FC<SchoolModuleProps> = ({
             
             <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-4">
               <div>
-                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 uppercase">
+                <span className="px-2 py-0.5 rounded text-[10px] font-bold bg-blue-100 text-blue-800 dark:bg-blue-950 dark:text-blue-300 uppercase">
                   Class {selectedStudent.gradeClass}
                 </span>
                 <h2 className="text-lg font-bold text-slate-900 dark:text-white mt-1">{selectedStudent.studentName}</h2>
-                <p className="text-xs text-slate-500">Guardian: {selectedStudent.guardianName} ({selectedStudent.phone})</p>
+                <p className="text-xs text-slate-500">
+                  Guardian: {selectedStudent.guardianName} ({selectedStudent.phone || selectedStudent.guardianPhone || '+91 98300 00000'})
+                </p>
               </div>
 
               <div className="text-right">
-                <span className="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 text-xs font-extrabold">
+                <span className="px-2.5 py-1 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 text-xs font-extrabold">
                   Fee Status: {selectedStudent.feeStatus}
                 </span>
-                <p className="text-[10px] text-slate-400 mt-1">Annual Fee: ₹{selectedStudent.annualFee.toLocaleString('en-IN')}</p>
+                <p className="text-[10px] text-slate-400 mt-1">
+                  Annual Fee: ₹{(selectedStudent.annualFee || 45000).toLocaleString('en-IN')}
+                </p>
               </div>
             </div>
 
@@ -125,11 +159,11 @@ export const SchoolModule: React.FC<SchoolModuleProps> = ({
                     </tr>
                   </thead>
                   <tbody className="divide-y divide-slate-100 dark:divide-slate-800">
-                    {selectedStudent.reportCard.map((rc, i) => (
+                    {(selectedStudent.reportCard && selectedStudent.reportCard.length > 0 ? selectedStudent.reportCard : defaultReportCard).map((rc, i) => (
                       <tr key={i}>
                         <td className="py-2 font-semibold text-slate-800 dark:text-slate-200">{rc.subject}</td>
                         <td className="py-2 font-mono">{rc.marksScored} / {rc.maxMarks}</td>
-                        <td className="py-2"><span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-bold">{rc.grade}</span></td>
+                        <td className="py-2"><span className="px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 dark:bg-emerald-950 dark:text-emerald-300 font-bold">{rc.grade}</span></td>
                       </tr>
                     ))}
                   </tbody>

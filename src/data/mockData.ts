@@ -9,6 +9,7 @@ import {
   FinanceTransaction, 
   EventItem, 
   SchoolRecord, 
+  StudentRecord,
   VaultDocument, 
   FamilyTreeNode, 
   BloodDonor, 
@@ -996,39 +997,69 @@ export const INITIAL_SCHOOL_RECORD: SchoolRecord = {
   classesList: ['Nursery', 'KG', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11 Science', 'Class 11 Commerce', 'Class 12 Science', 'Class 12 Commerce']
 };
 
-export const INITIAL_STUDENTS = [
+export const INITIAL_STUDENTS: StudentRecord[] = [
   {
     id: 'stu-01',
+    orgId: 'org-4',
     studentName: 'Aarav Sharma',
     rollNo: '2026-X-012',
     gradeClass: 'Class 10-A',
     guardianName: 'Ramesh Sharma',
     guardianPhone: '+91 98300 11223',
+    phone: '+91 98300 11223',
     feeStatus: 'Paid' as const,
     attendancePercentage: 96.5,
-    gradeScore: 'A+ (92%)'
+    attendancePercent: 96.5,
+    gradeScore: 'A+ (92%)',
+    annualFee: 45000,
+    reportCard: [
+      { subject: 'Mathematics & Computing', marksScored: 95, maxMarks: 100, grade: 'A+' },
+      { subject: 'Physics & Science', marksScored: 91, maxMarks: 100, grade: 'A+' },
+      { subject: 'English & Literature', marksScored: 88, maxMarks: 100, grade: 'A' },
+      { subject: 'Social Studies & Civics', marksScored: 94, maxMarks: 100, grade: 'A+' }
+    ]
   },
   {
     id: 'stu-02',
+    orgId: 'org-4',
     studentName: 'Ananya Sen',
     rollNo: '2026-XII-005',
     gradeClass: 'Class 12 Science',
     guardianName: 'Dr. Sujata Sen',
     guardianPhone: '+91 98315 77665',
+    phone: '+91 98315 77665',
     feeStatus: 'Scholarship Holder' as const,
     attendancePercentage: 98.2,
-    gradeScore: 'O (96.4%)'
+    attendancePercent: 98.2,
+    gradeScore: 'O (96.4%)',
+    annualFee: 52000,
+    reportCard: [
+      { subject: 'Advanced Mathematics', marksScored: 98, maxMarks: 100, grade: 'O' },
+      { subject: 'Chemistry', marksScored: 96, maxMarks: 100, grade: 'O' },
+      { subject: 'Physics', marksScored: 95, maxMarks: 100, grade: 'O' },
+      { subject: 'Computer Science', marksScored: 97, maxMarks: 100, grade: 'O' }
+    ]
   },
   {
     id: 'stu-03',
+    orgId: 'org-4',
     studentName: 'Vikram Roy',
     rollNo: '2026-VIII-041',
     gradeClass: 'Class 8-B',
     guardianName: 'Debashis Roy',
     guardianPhone: '+91 98302 11223',
+    phone: '+91 98302 11223',
     feeStatus: 'Pending' as const,
     attendancePercentage: 89.0,
-    gradeScore: 'B+ (78%)'
+    attendancePercent: 89.0,
+    gradeScore: 'B+ (78%)',
+    annualFee: 38000,
+    reportCard: [
+      { subject: 'Mathematics', marksScored: 76, maxMarks: 100, grade: 'B+' },
+      { subject: 'Science', marksScored: 81, maxMarks: 100, grade: 'A' },
+      { subject: 'English', marksScored: 75, maxMarks: 100, grade: 'B+' },
+      { subject: 'Regional Language', marksScored: 80, maxMarks: 100, grade: 'A' }
+    ]
   }
 ];
 
@@ -1042,12 +1073,19 @@ export const INITIAL_VAULT_DOCUMENTS: VaultDocument[] = [
     uploadDate: '2020-01-15',
     fileSize: '3.4 MB',
     ocrSummary: 'Official registration document of Ekdalia Evergreen Committee under West Bengal Societies Registration Act XXVI of 1961. Reg No S/1L/28941/1933.',
+    ocrRawText: 'CERTIFICATE OF REGISTRATION OF SOCIETIES. WEST BENGAL ACT XXVI OF 1961. I hereby certify that Ekdalia Evergreen Club & Social Welfare Committee has this day been registered under the West Bengal Societies Registration Act, 1961. Given under my hand at Kolkata this 15th day of January Two Thousand and Twenty.',
     extractedKeyClauses: [
       { label: 'Registration No', value: 'S/1L/28941/1933' },
       { label: 'Registered Address', value: '15/2 Gariahat Road, Kolkata - 700019' },
       { label: 'Governing Act', value: 'West Bengal Societies Registration Act 1961' },
       { label: 'Executive Term', value: '2 Years per elected board' }
     ],
+    extractedData: {
+      docType: 'Society Registration Certificate',
+      orgName: 'Ekdalia Evergreen Committee',
+      regNo: 'S/1L/28941/1933',
+      totalAmount: 'N/A (Statutory Deed)'
+    },
     fileUrl: '#'
   },
   {
@@ -1059,12 +1097,19 @@ export const INITIAL_VAULT_DOCUMENTS: VaultDocument[] = [
     uploadDate: '2021-04-10',
     fileSize: '1.2 MB',
     ocrSummary: 'Order granting exemption under section 80G(5)(vi) of Income Tax Act 1961. Unique Registration Number CIT-KOL/80G/2021-22/A-481. 50% tax exemption for donors.',
+    ocrRawText: 'INCOME TAX DEPARTMENT INDIA. ORDER UNDER SECTION 80G(5)(vi) OF THE INCOME TAX ACT 1961. Name of the Trust: Ekdalia Evergreen Committee. Unique Registration Number: CIT-KOL/80G/2021-22/A-481. Donations made to the above entity qualify for deduction under section 80G.',
     extractedKeyClauses: [
       { label: 'URN Number', value: 'CIT-KOL/80G/2021-22/A-481' },
       { label: 'Section', value: 'Section 80G(5)(vi)' },
       { label: 'Validity', value: 'Perpetual / Valid till AY 2026-27' },
       { label: 'Exemption Rate', value: '50% deduction for donor' }
     ],
+    extractedData: {
+      docType: 'Income Tax 80G Order',
+      orgName: 'Ekdalia Evergreen Committee',
+      regNo: 'CIT-KOL/80G/2021-22/A-481',
+      totalAmount: 'Exempted u/s 80G'
+    },
     fileUrl: '#'
   },
   {
@@ -1076,6 +1121,7 @@ export const INITIAL_VAULT_DOCUMENTS: VaultDocument[] = [
     uploadDate: '2026-05-30',
     fileSize: '8.1 MB',
     ocrSummary: 'Complete Audit Report prepared by M/s Sen & Partners, Chartered Accountants. Total Income: ₹1,45,20,000. Total Expenditures: ₹1,12,80,000. Net Surplus: ₹32,40,000.',
+    ocrRawText: 'INDEPENDENT AUDITOR REPORT. To the Trustees of Ekdalia Evergreen Committee. We have audited the accompanying financial statements comprising Balance Sheet as at 31st March 2026 and Income & Expenditure Account for the year ended. Gross Income: ₹1,45,20,000. Total Expenditure: ₹1,12,80,000.',
     extractedKeyClauses: [
       { label: 'Total Receipts/Income 2025-26', value: '₹14,520,000' },
       { label: 'Total Festival Expense', value: '₹68,50,000' },
@@ -1083,6 +1129,12 @@ export const INITIAL_VAULT_DOCUMENTS: VaultDocument[] = [
       { label: 'Net Corpus Fund Surplus', value: '₹32,40,000' },
       { label: 'Auditor Opinion', value: 'Unqualified / True & Fair View' }
     ],
+    extractedData: {
+      docType: 'Audited Financial Report',
+      orgName: 'Ekdalia Evergreen Committee',
+      regNo: 'CA-AUD-2026-88',
+      totalAmount: '₹1,45,20,000'
+    },
     fileUrl: '#'
   },
   {
@@ -1094,12 +1146,19 @@ export const INITIAL_VAULT_DOCUMENTS: VaultDocument[] = [
     uploadDate: '2015-08-22',
     fileSize: '12.4 MB',
     ocrSummary: '99-year perpetual lease agreement with Kolkata Municipal Corporation (KMC) for premises at 15/2 Gariahat Road. KMC Mutation Number 19-082-01-0042.',
+    ocrRawText: 'KOLKATA MUNICIPAL CORPORATION LEASE DEED. Premises: 15/2 Gariahat Road, Ward 85. Lessee: Ekdalia Evergreen Committee. Tenure: 99 Years. Mutation Certificate Number: 19-082-01-0042.',
     extractedKeyClauses: [
       { label: 'Premises Area', value: '14 Kathas (approx 10,080 sq.ft)' },
       { label: 'Lease Tenure', value: '99 Years (1985 - 2084)' },
       { label: 'KMC Mutation No', value: '19-082-01-0042' },
       { label: 'Usage Restriction', value: 'Community Hall, Library, & Social Welfare Services Only' }
     ],
+    extractedData: {
+      docType: 'KMC Land Lease Deed',
+      orgName: 'Ekdalia Evergreen Committee',
+      regNo: '19-082-01-0042',
+      totalAmount: '99-Yr Perpetual Lease'
+    },
     fileUrl: '#'
   }
 ];

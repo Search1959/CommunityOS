@@ -202,14 +202,19 @@ export interface EventItem {
 
 export interface StudentRecord {
   id: string;
+  orgId?: string;
   studentName: string;
   rollNo: string;
   gradeClass: string;
   guardianName: string;
   guardianPhone: string;
+  phone?: string;
   feeStatus: 'Paid' | 'Pending' | 'Scholarship Holder';
   attendancePercentage: number;
+  attendancePercent?: number;
   gradeScore: string;
+  annualFee?: number;
+  reportCard?: { subject: string; marksScored: number; maxMarks: number; grade: string }[];
 }
 
 export interface SchoolRecord {
@@ -229,12 +234,14 @@ export interface VaultDocument {
   id: string;
   orgId: string;
   title: string;
-  category: 'Trust Deed' | 'Registration Certificate' | 'PAN & GST' | '80G & 12A' | 'Audit Report' | 'Land Deed' | 'Court Case' | 'Meeting Minutes' | 'Insurance';
-  fileType: 'PDF' | 'DOCX' | 'JPG' | 'XLSX';
+  category: string;
+  fileType: string;
   uploadDate: string;
   fileSize: string;
   ocrSummary: string;
+  ocrRawText?: string;
   extractedKeyClauses: { label: string; value: string }[];
+  extractedData?: { docType: string; orgName: string; regNo: string; totalAmount: string };
   fileUrl: string;
 }
 

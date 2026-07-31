@@ -1,0 +1,989 @@
+import { 
+  Organization, 
+  Member, 
+  CommitteeOfficeBearer, 
+  Meeting, 
+  WelfareScheme, 
+  SchemeApplication, 
+  Donation, 
+  FinanceTransaction, 
+  EventItem, 
+  SchoolRecord, 
+  VaultDocument, 
+  FamilyTreeNode, 
+  BloodDonor, 
+  BusinessListing, 
+  CitizenRequest, 
+  GovernmentScheme, 
+  WhatsAppAlertLog 
+} from '../types';
+
+export const INITIAL_ORGANIZATIONS: Organization[] = [
+  {
+    id: 'org-1',
+    slug: 'durgapuja',
+    name: 'Ekdalia Evergreen Durga Puja Committee',
+    type: 'Puja Committee',
+    tagline: '91 Years of Heritage, Devotion, Culture & Social Welfare in South Kolkata',
+    regNo: 'S/1L/28941/1933',
+    pan: 'AAATE4821K',
+    gst: '19AAATE4821K1ZM',
+    eightyG: 'CIT-KOL/80G/2021-22/A-481',
+    twelveA: 'AAATE4821K12A1',
+    address: '15/2 Gariahat Road, Ballygunge, Kolkata - 700019',
+    phone: '+91 98300 12345',
+    email: 'contact@ekdaliaevergreen.org',
+    websiteDomain: 'durgapuja.communityos.in',
+    mission: 'To preserve traditional Bengali culture, organize peaceful community festivals, and drive year-round social welfare initiatives like medical relief and educational aid.',
+    history: 'Established in 1933, Ekdalia Evergreen is renowned worldwide for traditional lighting, architectural pandals, and relentless community relief work during natural disasters and medical emergencies.',
+    constitutionSummary: 'Governed by a 25-member Executive Committee elected every 2 years. Mandates 20% of all festival donations to be directed towards the Community Welfare Fund.',
+    membersCount: 1420,
+    totalDonationsYTD: 4280000,
+    activeSchemesCount: 4,
+    themeColor: '#dc2626', // Red
+    bannerUrl: 'https://images.unsplash.com/photo-1603899122634-f086ca5f5ddd?auto=format&fit=crop&q=80&w=1200',
+    logoUrl: 'https://images.unsplash.com/photo-1628102491629-778571d893a3?auto=format&fit=crop&q=80&w=200'
+  },
+  {
+    id: 'org-2',
+    slug: 'jaiswalsamaj',
+    name: 'All India Jaiswal Sarvavargiya Mahasabha',
+    type: 'Samaj / Community Association',
+    tagline: 'Uniting Families, Empowering Youth, Preserving Culture & Supporting Business',
+    regNo: 'S/REG/48192/1974',
+    pan: 'AAAAT9812A',
+    gst: '07AAAAT9812A1Z3',
+    eightyG: 'DEL/80G/2020-21/J-102',
+    twelveA: 'AAAAT9812A12AA',
+    address: 'Jaiswal Bhawan, Central Avenue, New Delhi - 110001',
+    phone: '+91 98111 88822',
+    email: 'info@jaiswalsamaj.org',
+    websiteDomain: 'jaiswalsamaj.communityos.in',
+    mission: 'To uplift community families through higher education scholarships, matrimonial networking, emergency healthcare funds, and business mentorship.',
+    history: 'Founded in 1974, representing over 50,000 Jaiswal families across North & Eastern India with regional chapters in Delhi, Kolkata, Kanpur, Patna, and Varanasi.',
+    constitutionSummary: 'All decision-making managed through an elected Central Board. Holds annual AGM in December and quarterly regional delegate conferences.',
+    membersCount: 3850,
+    totalDonationsYTD: 8950000,
+    activeSchemesCount: 6,
+    themeColor: '#d97706', // Amber
+    bannerUrl: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&q=80&w=1200',
+    logoUrl: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&q=80&w=200'
+  },
+  {
+    id: 'org-3',
+    slug: 'shreeram-trust',
+    name: 'Shree Ram Janmabhoomi Charitable & Religious Trust',
+    type: 'Religious Trust',
+    tagline: 'Serving Devotees, Running Annakshetra & Educating Needy Children',
+    regNo: 'TR/AYD/9823/2012',
+    pan: 'AAATS1298B',
+    gst: '09AAATS1298B1ZX',
+    eightyG: 'UP/80G/2019-20/R-082',
+    twelveA: 'AAATS1298B12A8',
+    address: 'Ram Path, Near Temple Gate 3, Ayodhya, Uttar Pradesh - 224123',
+    phone: '+91 94500 55443',
+    email: 'trust@shreeramseva.org',
+    websiteDomain: 'temple.communityos.in',
+    mission: 'To run daily free food kitchens (Annakshetra), maintain Vedic Gurukuls, provide medical aid to pilgrims, and renovate ancient heritage shrines.',
+    history: 'Serving Ayodhya pilgrims for over 3 decades, feeding over 5,000 devotees daily and supporting 15 Vedic Gurukuls across Uttar Pradesh.',
+    constitutionSummary: 'Governed by a Board of Trustees under the Charitable Endowments Act. Accounts audited annually by CAG empanelled auditors.',
+    membersCount: 8500,
+    totalDonationsYTD: 24500000,
+    activeSchemesCount: 5,
+    themeColor: '#ea580c', // Orange
+    bannerUrl: 'https://images.unsplash.com/photo-1561361513-2d000a50f0dc?auto=format&fit=crop&q=80&w=1200',
+    logoUrl: 'https://images.unsplash.com/photo-1609137144813-7d9921338f24?auto=format&fit=crop&q=80&w=200'
+  },
+  {
+    id: 'org-4',
+    slug: 'model-school',
+    name: 'DEINRIM Vidyapeeth Educational Trust & Model Academy',
+    type: 'School / Educational Trust',
+    tagline: 'Holistic K-12 Education with Modern Science, Values & Digital Skills',
+    regNo: 'EDU/KOL/8812/2005',
+    pan: 'AAATD4491M',
+    gst: '19AAATD4491M1Z1',
+    eightyG: 'KOL/80G/2022-23/E-991',
+    twelveA: 'AAATD4491M12A5',
+    address: 'Sector V, Salt Lake City, Kolkata - 700091',
+    phone: '+91 33 2357 8899',
+    email: 'admissions@deinrimvidyapeeth.edu.in',
+    websiteDomain: 'school.communityos.in',
+    mission: 'To provide affordable, high-quality CBSE & ICSE education to students from all socio-economic backgrounds with 100% scholarship for merit-cum-means scholars.',
+    history: 'Established in 2005, DEINRIM Vidyapeeth houses 1,200 students with state-of-the-art Robotics Labs, Sports Complex, and Digital Classrooms.',
+    constitutionSummary: 'Managed by a School Governing Body comprising Academic Experts, Parent Representatives, and Education Trust Trustees.',
+    membersCount: 1250,
+    totalDonationsYTD: 3100000,
+    activeSchemesCount: 3,
+    themeColor: '#2563eb', // Blue
+    bannerUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200',
+    logoUrl: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&q=80&w=200'
+  }
+];
+
+export const INITIAL_MEMBERS: Member[] = [
+  {
+    id: 'mem-101',
+    membershipNo: 'EE-2026-001',
+    orgId: 'org-1',
+    name: 'Subhash Chandra Bose',
+    photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+    roleInOrg: 'President',
+    bloodGroup: 'O+',
+    occupation: 'Senior Business Director',
+    businessName: 'Bose Logistics & Warehousing',
+    phone: '+91 98301 99887',
+    email: 'subhash.bose@boselogistics.in',
+    address: '12B Ballygunge Place, Kolkata - 700019',
+    familyMembersCount: 4,
+    status: 'Active',
+    joinDate: '2010-04-15',
+    renewalDueDate: '2027-03-31',
+    annualFeePaid: true,
+    emergencyContact: { name: 'Srabani Bose', phone: '+91 98301 99888', relation: 'Spouse' },
+    qrCodeData: 'EE-MEMBER-101-ACTIVE'
+  },
+  {
+    id: 'mem-102',
+    membershipNo: 'EE-2026-002',
+    orgId: 'org-1',
+    name: 'Anirban Mukherjee',
+    photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200',
+    roleInOrg: 'General Secretary',
+    bloodGroup: 'A+',
+    occupation: 'Chartered Accountant',
+    businessName: 'Mukherjee & Associates LLP',
+    phone: '+91 98310 44556',
+    email: 'anirban@mukherjee-ca.in',
+    address: '45 Rashbehari Avenue, Kolkata - 700026',
+    familyMembersCount: 3,
+    status: 'Active',
+    joinDate: '2012-08-20',
+    renewalDueDate: '2027-03-31',
+    annualFeePaid: true,
+    emergencyContact: { name: 'Piyali Mukherjee', phone: '+91 98310 44557', relation: 'Spouse' },
+    qrCodeData: 'EE-MEMBER-102-ACTIVE'
+  },
+  {
+    id: 'mem-103',
+    membershipNo: 'EE-2026-003',
+    orgId: 'org-1',
+    name: 'Debashis Roy',
+    photoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200',
+    roleInOrg: 'Treasurer',
+    bloodGroup: 'B+',
+    occupation: 'Bank Manager (Retd.)',
+    phone: '+91 98302 11223',
+    email: 'debashis.roy@gmail.com',
+    address: '88 Southern Avenue, Kolkata - 700029',
+    familyMembersCount: 2,
+    status: 'Active',
+    joinDate: '2008-01-10',
+    renewalDueDate: '2027-03-31',
+    annualFeePaid: true,
+    emergencyContact: { name: 'Rina Roy', phone: '+91 98302 11224', relation: 'Spouse' },
+    qrCodeData: 'EE-MEMBER-103-ACTIVE'
+  },
+  {
+    id: 'mem-104',
+    membershipNo: 'EE-2026-042',
+    orgId: 'org-1',
+    name: 'Dr. Sujata Sen',
+    photoUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200',
+    roleInOrg: 'Executive Member',
+    bloodGroup: 'AB+',
+    occupation: 'Cardiologist',
+    businessName: 'Sen Heart Care Clinic',
+    phone: '+91 98315 77665',
+    email: 'dr.sujata.sen@senclinic.org',
+    address: '3A Lansdowne Lane, Kolkata - 700020',
+    familyMembersCount: 5,
+    status: 'Active',
+    joinDate: '2016-03-12',
+    renewalDueDate: '2027-03-31',
+    annualFeePaid: true,
+    emergencyContact: { name: 'Amit Sen', phone: '+91 98315 77666', relation: 'Spouse' },
+    qrCodeData: 'EE-MEMBER-104-ACTIVE'
+  },
+  {
+    id: 'mem-201',
+    membershipNo: 'JS-2026-001',
+    orgId: 'org-2',
+    name: 'Rameshwar Jaiswal',
+    photoUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200',
+    roleInOrg: 'National President',
+    bloodGroup: 'O+',
+    occupation: 'Industrialist',
+    businessName: 'Jaiswal Steel & Power Corp',
+    phone: '+91 98110 55511',
+    email: 'rameshwar@jaiswalsteel.com',
+    address: '78 Barakhamba Road, Connaught Place, New Delhi',
+    familyMembersCount: 6,
+    status: 'Active',
+    joinDate: '2005-06-01',
+    renewalDueDate: '2027-03-31',
+    annualFeePaid: true,
+    emergencyContact: { name: 'Sunita Jaiswal', phone: '+91 98110 55512', relation: 'Spouse' },
+    qrCodeData: 'JS-MEMBER-201-ACTIVE'
+  },
+  {
+    id: 'mem-202',
+    membershipNo: 'JS-2026-088',
+    orgId: 'org-2',
+    name: 'Pooja Jaiswal',
+    photoUrl: 'https://images.unsplash.com/photo-1580489944761-15a19d654956?auto=format&fit=crop&q=80&w=200',
+    roleInOrg: 'Women Wing Secretary',
+    bloodGroup: 'B-',
+    occupation: 'Software Engineer & Entrepreneur',
+    businessName: 'Jaiswal Tech Solutions',
+    phone: '+91 98712 33445',
+    email: 'pooja@jaiswaltech.com',
+    address: 'B-12 Cyber City, Gurugram, Haryana',
+    familyMembersCount: 3,
+    status: 'Active',
+    joinDate: '2020-01-15',
+    renewalDueDate: '2027-03-31',
+    annualFeePaid: true,
+    emergencyContact: { name: 'Vikram Jaiswal', phone: '+91 98712 33446', relation: 'Brother' },
+    qrCodeData: 'JS-MEMBER-202-ACTIVE'
+  }
+];
+
+export const INITIAL_OFFICE_BEARERS: CommitteeOfficeBearer[] = [
+  {
+    id: 'ob-1',
+    orgId: 'org-1',
+    name: 'Subhash Chandra Bose',
+    designation: 'President',
+    phone: '+91 98301 99887',
+    email: 'subhash.bose@boselogistics.in',
+    termPeriod: '2025 - 2027',
+    photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200'
+  },
+  {
+    id: 'ob-2',
+    orgId: 'org-1',
+    name: 'Anirban Mukherjee',
+    designation: 'Secretary',
+    phone: '+91 98310 44556',
+    email: 'anirban@mukherjee-ca.in',
+    termPeriod: '2025 - 2027',
+    photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200'
+  },
+  {
+    id: 'ob-3',
+    orgId: 'org-1',
+    name: 'Debashis Roy',
+    designation: 'Treasurer',
+    phone: '+91 98302 11223',
+    email: 'debashis.roy@gmail.com',
+    termPeriod: '2025 - 2027',
+    photoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200'
+  },
+  {
+    id: 'ob-4',
+    orgId: 'org-1',
+    name: 'Dr. Sujata Sen',
+    designation: 'Executive Member',
+    phone: '+91 98315 77665',
+    email: 'dr.sujata.sen@senclinic.org',
+    termPeriod: '2025 - 2027',
+    photoUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200'
+  }
+];
+
+export const INITIAL_MEETINGS: Meeting[] = [
+  {
+    id: 'meet-2026-01',
+    orgId: 'org-1',
+    title: '92nd Annual General Meeting (AGM) 2026',
+    meetingType: 'AGM',
+    date: '2026-06-15',
+    time: '17:00 IST',
+    venue: 'Evergreen Community Hall, Gariahat',
+    attendeesCount: 185,
+    status: 'Completed',
+    agenda: [
+      'Approval of Audited Financial Accounts for FY 2025-26',
+      'Approval of Durga Puja 2026 Theme & Pandal Budget (₹75 Lakhs)',
+      'Expansion of Medical Relief Scheme for Senior Members',
+      'Election of Election Sub-Committee Officers'
+    ],
+    minutesSummary: 'AGM passed the FY 2025-26 accounts unanimously with total income of ₹1.45 Crores and net surplus of ₹32.4 Lakhs credited to the Welfare Corpus. Approved ₹75 Lakhs budget for Durga Puja 2026 and allocated ₹10 Lakhs specifically for free cataract surgeries.',
+    resolutionsPassed: [
+      { id: 'res-1', title: 'Resolution 1/2026: Passed Audited Accounts FY 2025-26', voteStatus: 'Unanimous' },
+      { id: 'res-2', title: 'Resolution 2/2026: Approved Durga Puja 2026 Budget ₹75,000,000', voteStatus: 'Passed (180 For, 5 Against)' },
+      { id: 'res-3', title: 'Resolution 3/2026: Extended Senior Medical Scheme Grant up to ₹50,000 per family', voteStatus: 'Unanimous' }
+    ],
+    documentUrl: 'AGM_Minutes_2026_Ekdalia.pdf'
+  },
+  {
+    id: 'meet-2026-02',
+    orgId: 'org-1',
+    title: 'Executive Committee Planning Meeting - Kali & Durga Puja',
+    meetingType: 'Executive Committee',
+    date: '2026-07-20',
+    time: '18:30 IST',
+    venue: 'Committee Office Room 2',
+    attendeesCount: 22,
+    status: 'Completed',
+    agenda: [
+      'Pandal Lighting Vendor Selection',
+      'Security & CCTV Surveillance Tender Approval',
+      'Volunteer Duty Roster Deployment'
+    ],
+    minutesSummary: 'Selected Premier Lighting Chandannagar for LED illumination. Approved CCTV installation tender of ₹2.8 Lakhs with 32 camera feeds.',
+    resolutionsPassed: [
+      { id: 'res-4', title: 'Awarded Lighting Contract to Premier Illumination', voteStatus: 'Passed' }
+    ]
+  }
+];
+
+export const INITIAL_WELFARE_SCHEMES: WelfareScheme[] = [
+  {
+    id: 'scheme-1',
+    orgId: 'org-1',
+    name: 'Swami Vivekananda Merit Scholarship Scheme',
+    category: 'Education Scholarship',
+    description: 'Financial assistance up to ₹25,000/year for meritorious students pursuing Higher Secondary, Engineering, Medical, or Polytechnic degrees.',
+    eligibilityCriteria: [
+      'Minimum 80% marks in Class 10/12 exams',
+      'Annual family income below ₹3.5 Lakhs/year',
+      'Member family or verified community resident'
+    ],
+    requiredDocuments: ['Mark Sheet Copy', 'Income Certificate / Income Tax Return', 'Aadhaar Card', 'Institution Admission Fee Receipt'],
+    annualBudget: 1500000,
+    disbursedAmount: 950000,
+    beneficiariesCount: 42,
+    status: 'Active'
+  },
+  {
+    id: 'scheme-2',
+    orgId: 'org-1',
+    name: 'Sanjivani Medical Emergency & Surgery Assistance',
+    category: 'Medical Assistance',
+    description: 'Direct reimbursement or hospital bill settlement up to ₹1,00,000 for critical surgeries, cancer chemotherapy, and cardiac treatments.',
+    eligibilityCriteria: [
+      'Verified prescription & hospital cost estimate',
+      'Patient must be registered member or citizen in need',
+      'Verification by Medical Sub-Committee'
+    ],
+    requiredDocuments: ['Hospital Discharge Summary / Estimate', 'Doctor Prescription', 'PAN/Aadhaar of Patient', 'Cancelled Cheque for NEFT'],
+    annualBudget: 2500000,
+    disbursedAmount: 1820000,
+    beneficiariesCount: 28,
+    status: 'Active'
+  },
+  {
+    id: 'scheme-3',
+    orgId: 'org-1',
+    name: 'Kanyadaan Marriage Aid Fund',
+    category: 'Marriage Assistance',
+    description: 'Financial grant of ₹51,000 for daughters of underprivileged community families for marriage ceremony support.',
+    eligibilityCriteria: ['Bride age 18+', 'Family income below ₹2.5 Lakhs/year', 'Bride or Groom family living in locality'],
+    requiredDocuments: ['Marriage Registration / Card', 'Bride Aadhaar Card', 'Income Certificate', 'Bank Account details'],
+    annualBudget: 1000000,
+    disbursedAmount: 612000,
+    beneficiariesCount: 12,
+    status: 'Active'
+  },
+  {
+    id: 'scheme-4',
+    orgId: 'org-2',
+    name: 'Jaiswal Youth Business Startup Seed Grant',
+    category: 'Women Welfare',
+    description: 'Interest-free micro-loans and grant up to ₹2,00,000 for young community entrepreneurs & women-led startups.',
+    eligibilityCriteria: ['Age 18-35', 'Detailed Business Plan', 'Recommendation by 2 Central Members'],
+    requiredDocuments: ['Business Plan PDF', 'GST / MSME Udyam Registration', 'PAN Card', 'Bank Statements 6 Months'],
+    annualBudget: 5000000,
+    disbursedAmount: 3200000,
+    beneficiariesCount: 18,
+    status: 'Active'
+  }
+];
+
+export const INITIAL_SCHEME_APPLICATIONS: SchemeApplication[] = [
+  {
+    id: 'app-901',
+    orgId: 'org-1',
+    schemeId: 'scheme-1',
+    schemeName: 'Swami Vivekananda Merit Scholarship Scheme',
+    applicantName: 'Tuhin Roy',
+    applicantPhone: '+91 98311 00221',
+    memberId: 'mem-103',
+    amountRequested: 25000,
+    amountApproved: 25000,
+    status: 'Approved',
+    appliedDate: '2026-05-10',
+    reason: 'Pursuing B.Tech Computer Science at Jadavpur University with 94.2% in Class 12.',
+    documentsSubmitted: ['class12_marksheet.pdf', 'income_cert.pdf', 'fees_receipt.pdf'],
+    verificationOfficer: 'Anirban Mukherjee (Secretary)'
+  },
+  {
+    id: 'app-902',
+    orgId: 'org-1',
+    schemeId: 'scheme-2',
+    schemeName: 'Sanjivani Medical Emergency & Surgery Assistance',
+    applicantName: 'Aparna Biswas',
+    applicantPhone: '+91 98319 44332',
+    amountRequested: 75000,
+    amountApproved: 60000,
+    status: 'Disbursed',
+    appliedDate: '2026-06-02',
+    reason: 'Emergency angioplasty stent placement at AMRI Hospital.',
+    documentsSubmitted: ['hospital_bill_estimate.pdf', 'discharge_summary.pdf'],
+    verificationOfficer: 'Dr. Sujata Sen (Medical Chair)'
+  },
+  {
+    id: 'app-903',
+    orgId: 'org-1',
+    schemeId: 'scheme-3',
+    schemeName: 'Kanyadaan Marriage Aid Fund',
+    applicantName: 'Manoj Das',
+    applicantPhone: '+91 98305 22114',
+    amountRequested: 51000,
+    status: 'Under Review',
+    appliedDate: '2026-07-15',
+    reason: 'Daughter Marriage scheduled for November 2026.',
+    documentsSubmitted: ['wedding_card.pdf', 'aadhaar_bride.pdf']
+  }
+];
+
+export const INITIAL_DONATIONS: Donation[] = [
+  {
+    id: 'don-8801',
+    orgId: 'org-1',
+    receiptNo: 'REC-2026-00421',
+    donorName: 'Subhash Chandra Bose',
+    donorPan: 'AAAPB1234F',
+    phone: '+91 98301 99887',
+    email: 'subhash.bose@boselogistics.in',
+    amount: 100000,
+    purpose: 'Durga Puja 2026 Pandal Fund & Medical Camp Sponsorship',
+    paymentMethod: 'UPI',
+    transactionRef: 'UPI/620198442109/YESB',
+    is80GEligible: true,
+    date: '2026-07-28',
+    certificateIssued: true
+  },
+  {
+    id: 'don-8802',
+    orgId: 'org-1',
+    receiptNo: 'REC-2026-00422',
+    donorName: 'Sanjiv Goenka Enterprises',
+    donorPan: 'AAACS8819L',
+    phone: '+91 33 2288 4000',
+    email: 'csr@rpsg.in',
+    amount: 500000,
+    purpose: 'Grand Lighting & Community Annadhan (Bhoga Distribution)',
+    paymentMethod: 'Bank Transfer',
+    transactionRef: 'NEFT/HDFCR52026072511002',
+    is80GEligible: true,
+    date: '2026-07-25',
+    certificateIssued: true
+  },
+  {
+    id: 'don-8803',
+    orgId: 'org-1',
+    receiptNo: 'REC-2026-00423',
+    donorName: 'Smt. Pratima Devi',
+    phone: '+91 98304 11223',
+    amount: 11000,
+    purpose: 'Swami Vivekananda Student Scholarship Corpus',
+    paymentMethod: 'QR Code',
+    transactionRef: 'UPI/620199102931/ICIC',
+    is80GEligible: true,
+    date: '2026-07-30',
+    certificateIssued: true
+  },
+  {
+    id: 'don-8804',
+    orgId: 'org-3',
+    receiptNo: 'RAM-REC-2026-901',
+    donorName: 'Ramesh Kumar Agarwal',
+    donorPan: 'AAAFA9812K',
+    phone: '+91 98100 44332',
+    amount: 250000,
+    purpose: 'Ram Navami Annakshetra Free Meals Distribution',
+    paymentMethod: 'Razorpay',
+    transactionRef: 'pay_P98231084201',
+    is80GEligible: true,
+    date: '2026-07-29',
+    certificateIssued: true
+  }
+];
+
+export const INITIAL_FINANCE_TRANSACTIONS: FinanceTransaction[] = [
+  {
+    id: 'fin-101',
+    voucherNo: 'VOU-2026-0182',
+    orgId: 'org-1',
+    type: 'Expense',
+    category: 'Cultural & Festival Expense',
+    ledgerAccount: 'Pandal Construction & Bamboo Structure',
+    amount: 285000,
+    paymentMethod: 'Cheque',
+    approvedBy: 'Debashis Roy (Treasurer)',
+    date: '2026-07-20',
+    description: 'Advance payment (40%) to Midnapore Decorators for Bamboo & Timber structure.',
+    projectName: 'Durga Puja 2026',
+    receiptAttachment: 'Midnapore_Decorators_Bill.pdf'
+  },
+  {
+    id: 'fin-102',
+    voucherNo: 'VOU-2026-0183',
+    orgId: 'org-1',
+    type: 'Expense',
+    category: 'Welfare Disbursement',
+    ledgerAccount: 'Medical Emergency Fund',
+    amount: 60000,
+    paymentMethod: 'Bank Transfer (NEFT)',
+    approvedBy: 'Anirban Mukherjee (Secretary)',
+    date: '2026-06-10',
+    description: 'Medical surgery grant disbursed to Aparna Biswas (App ID: app-902).',
+    projectName: 'Sanjivani Medical Scheme'
+  },
+  {
+    id: 'fin-103',
+    voucherNo: 'VOU-2026-0184',
+    orgId: 'org-1',
+    type: 'Income',
+    category: 'Donation Received',
+    ledgerAccount: 'Corpus Donation 80G',
+    amount: 500000,
+    paymentMethod: 'NEFT',
+    approvedBy: 'Subhash Chandra Bose (President)',
+    date: '2026-07-25',
+    description: 'CSR Donation received from Sanjiv Goenka Enterprises.',
+    projectName: 'Durga Puja 2026'
+  },
+  {
+    id: 'fin-104',
+    voucherNo: 'VOU-2026-0185',
+    orgId: 'org-1',
+    type: 'Income',
+    category: 'Membership Subscription',
+    ledgerAccount: 'Annual Membership Fees',
+    amount: 142000,
+    paymentMethod: 'UPI / Cash',
+    approvedBy: 'Debashis Roy (Treasurer)',
+    date: '2026-04-15',
+    description: 'Annual membership renewal collections Q1 2026.'
+  }
+];
+
+export const INITIAL_EVENTS: EventItem[] = [
+  {
+    id: 'evt-2026-01',
+    orgId: 'org-1',
+    title: 'Ekdalia Evergreen Durga Puja 2026 (93rd Edition)',
+    category: 'Puja / Festival',
+    startDate: '2026-10-18',
+    endDate: '2026-10-23',
+    venue: 'Ekdalia Road & Gariahat Crossing, Ballygunge',
+    description: 'World-famous Durga Puja with magnificent traditional lighting from Chandannagar, traditional Murti by Sanatan Rudra Pal, and daily Annadhan bhog distribution.',
+    expectedAttendees: 1500000,
+    registeredCount: 4200,
+    volunteersAssigned: 120,
+    budget: 7500000,
+    bannerUrl: 'https://images.unsplash.com/photo-1603899122634-f086ca5f5ddd?auto=format&fit=crop&q=80&w=800',
+    galleryImages: [
+      'https://images.unsplash.com/photo-1603899122634-f086ca5f5ddd?auto=format&fit=crop&q=80&w=400',
+      'https://images.unsplash.com/photo-1628102491629-778571d893a3?auto=format&fit=crop&q=80&w=400'
+    ],
+    status: 'Upcoming'
+  },
+  {
+    id: 'evt-2026-02',
+    orgId: 'org-1',
+    title: 'Mega Health & Eye Cataract Checkup Camp',
+    category: 'Medical Camp',
+    startDate: '2026-08-15',
+    endDate: '2026-08-15',
+    venue: 'Evergreen Community Hall Ground Floor',
+    description: 'Free eye checkup, ECG, diabetes screening, and selection for 100 free cataract surgeries in collaboration with Sankara Nethralaya.',
+    expectedAttendees: 600,
+    registeredCount: 380,
+    volunteersAssigned: 25,
+    budget: 350000,
+    bannerUrl: 'https://images.unsplash.com/photo-1576091160399-112ba8d25d1d?auto=format&fit=crop&q=80&w=800',
+    galleryImages: [],
+    status: 'Upcoming'
+  },
+  {
+    id: 'evt-2026-03',
+    orgId: 'org-2',
+    title: 'All India Jaiswal Youth & Matrimonial Sammelan 2026',
+    category: 'Seminar / AGM',
+    startDate: '2026-09-05',
+    endDate: '2026-09-06',
+    venue: 'Vigyan Bhawan, New Delhi',
+    description: 'National convention bring together 3,000+ Jaiswal families for youth skill development, career guidance, and matrimonial introductions.',
+    expectedAttendees: 3000,
+    registeredCount: 1850,
+    volunteersAssigned: 50,
+    budget: 2500000,
+    bannerUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=800',
+    galleryImages: [],
+    status: 'Upcoming'
+  }
+];
+
+export const INITIAL_SCHOOL_RECORD: SchoolRecord = {
+  orgId: 'org-4',
+  schoolName: 'DEINRIM Vidyapeeth Academy',
+  academicYear: '2026 - 2027',
+  totalStudents: 1280,
+  totalTeachers: 64,
+  attendanceTodayPercentage: 94.8,
+  feesCollectedYTD: 18500000,
+  totalPendingFees: 1200000,
+  recentAnnouncements: [
+    { id: 'ann-1', date: '2026-07-28', title: 'Mid-Term Examination Schedule Released for Class VI to XII' },
+    { id: 'ann-2', date: '2026-07-20', title: 'Annual Science Fair & Robotics Exhibition on Aug 22' },
+    { id: 'ann-3', date: '2026-07-10', title: 'Scholarship Test for Merit-Cum-Means Applicants' }
+  ],
+  classesList: ['Nursery', 'KG', 'Class 1', 'Class 2', 'Class 3', 'Class 4', 'Class 5', 'Class 6', 'Class 7', 'Class 8', 'Class 9', 'Class 10', 'Class 11 Science', 'Class 11 Commerce', 'Class 12 Science', 'Class 12 Commerce']
+};
+
+export const INITIAL_STUDENTS = [
+  {
+    id: 'stu-01',
+    studentName: 'Aarav Sharma',
+    rollNo: '2026-X-012',
+    gradeClass: 'Class 10-A',
+    guardianName: 'Ramesh Sharma',
+    guardianPhone: '+91 98300 11223',
+    feeStatus: 'Paid' as const,
+    attendancePercentage: 96.5,
+    gradeScore: 'A+ (92%)'
+  },
+  {
+    id: 'stu-02',
+    studentName: 'Ananya Sen',
+    rollNo: '2026-XII-005',
+    gradeClass: 'Class 12 Science',
+    guardianName: 'Dr. Sujata Sen',
+    guardianPhone: '+91 98315 77665',
+    feeStatus: 'Scholarship Holder' as const,
+    attendancePercentage: 98.2,
+    gradeScore: 'O (96.4%)'
+  },
+  {
+    id: 'stu-03',
+    studentName: 'Vikram Roy',
+    rollNo: '2026-VIII-041',
+    gradeClass: 'Class 8-B',
+    guardianName: 'Debashis Roy',
+    guardianPhone: '+91 98302 11223',
+    feeStatus: 'Pending' as const,
+    attendancePercentage: 89.0,
+    gradeScore: 'B+ (78%)'
+  }
+];
+
+export const INITIAL_VAULT_DOCUMENTS: VaultDocument[] = [
+  {
+    id: 'vault-01',
+    orgId: 'org-1',
+    title: 'Society Registration Certificate & Deed of Constitution',
+    category: 'Registration Certificate',
+    fileType: 'PDF',
+    uploadDate: '2020-01-15',
+    fileSize: '3.4 MB',
+    ocrSummary: 'Official registration document of Ekdalia Evergreen Committee under West Bengal Societies Registration Act XXVI of 1961. Reg No S/1L/28941/1933.',
+    extractedKeyClauses: [
+      { label: 'Registration No', value: 'S/1L/28941/1933' },
+      { label: 'Registered Address', value: '15/2 Gariahat Road, Kolkata - 700019' },
+      { label: 'Governing Act', value: 'West Bengal Societies Registration Act 1961' },
+      { label: 'Executive Term', value: '2 Years per elected board' }
+    ],
+    fileUrl: '#'
+  },
+  {
+    id: 'vault-02',
+    orgId: 'org-1',
+    title: 'Income Tax 80G Approval Certificate (2021-2026)',
+    category: '80G & 12A',
+    fileType: 'PDF',
+    uploadDate: '2021-04-10',
+    fileSize: '1.2 MB',
+    ocrSummary: 'Order granting exemption under section 80G(5)(vi) of Income Tax Act 1961. Unique Registration Number CIT-KOL/80G/2021-22/A-481. 50% tax exemption for donors.',
+    extractedKeyClauses: [
+      { label: 'URN Number', value: 'CIT-KOL/80G/2021-22/A-481' },
+      { label: 'Section', value: 'Section 80G(5)(vi)' },
+      { label: 'Validity', value: 'Perpetual / Valid till AY 2026-27' },
+      { label: 'Exemption Rate', value: '50% deduction for donor' }
+    ],
+    fileUrl: '#'
+  },
+  {
+    id: 'vault-03',
+    orgId: 'org-1',
+    title: 'Audited Financial Statements & CAG Audit Report FY 2025-26',
+    category: 'Audit Report',
+    fileType: 'PDF',
+    uploadDate: '2026-05-30',
+    fileSize: '8.1 MB',
+    ocrSummary: 'Complete Audit Report prepared by M/s Sen & Partners, Chartered Accountants. Total Income: ₹1,45,20,000. Total Expenditures: ₹1,12,80,000. Net Surplus: ₹32,40,000.',
+    extractedKeyClauses: [
+      { label: 'Total Receipts/Income 2025-26', value: '₹14,520,000' },
+      { label: 'Total Festival Expense', value: '₹68,50,000' },
+      { label: 'Total Welfare Expense', value: '₹34,20,000' },
+      { label: 'Net Corpus Fund Surplus', value: '₹32,40,000' },
+      { label: 'Auditor Opinion', value: 'Unqualified / True & Fair View' }
+    ],
+    fileUrl: '#'
+  },
+  {
+    id: 'vault-04',
+    orgId: 'org-1',
+    title: 'Land Lease Deed & Municipal Property Mutation Deed (Gariahat Premises)',
+    category: 'Land Deed',
+    fileType: 'PDF',
+    uploadDate: '2015-08-22',
+    fileSize: '12.4 MB',
+    ocrSummary: '99-year perpetual lease agreement with Kolkata Municipal Corporation (KMC) for premises at 15/2 Gariahat Road. KMC Mutation Number 19-082-01-0042.',
+    extractedKeyClauses: [
+      { label: 'Premises Area', value: '14 Kathas (approx 10,080 sq.ft)' },
+      { label: 'Lease Tenure', value: '99 Years (1985 - 2084)' },
+      { label: 'KMC Mutation No', value: '19-082-01-0042' },
+      { label: 'Usage Restriction', value: 'Community Hall, Library, & Social Welfare Services Only' }
+    ],
+    fileUrl: '#'
+  }
+];
+
+export const INITIAL_FAMILY_TREES: FamilyTreeNode[] = [
+  {
+    id: 'fam-01',
+    orgId: 'org-2',
+    familyName: 'Rameshwar Jaiswal Family Lineage',
+    headOfFamily: 'Rameshwar Jaiswal',
+    photoUrl: 'https://images.unsplash.com/photo-1560250097-0b93528c311a?auto=format&fit=crop&q=80&w=200',
+    address: '78 Barakhamba Road, Connaught Place, New Delhi',
+    members: [
+      { name: 'Late Badri Prasad Jaiswal', relation: 'Father', generation: 1, age: 88, bloodGroup: 'O+', occupation: 'Founder, Jaiswal Trading (Retd.)' },
+      { name: 'Rameshwar Jaiswal', relation: 'Head', generation: 2, age: 58, bloodGroup: 'O+', occupation: 'Industrialist', businessName: 'Jaiswal Steel & Power' },
+      { name: 'Sunita Jaiswal', relation: 'Spouse', generation: 2, age: 54, bloodGroup: 'A+', occupation: 'Homemaker & Social Worker' },
+      { name: 'Aman Jaiswal', relation: 'Son', generation: 3, age: 29, bloodGroup: 'O+', occupation: 'VP Operations', businessName: 'Jaiswal Steel' },
+      { name: 'Pooja Jaiswal', relation: 'Daughter-in-law', generation: 3, age: 27, bloodGroup: 'B-', occupation: 'Tech Entrepreneur', businessName: 'Jaiswal Tech' },
+      { name: 'Reyansh Jaiswal', relation: 'Grandson', generation: 4, age: 3, bloodGroup: 'O+', occupation: 'Toddler' }
+    ]
+  },
+  {
+    id: 'fam-02',
+    orgId: 'org-1',
+    familyName: 'Subhash Bose Family',
+    headOfFamily: 'Subhash Chandra Bose',
+    photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+    address: '12B Ballygunge Place, Kolkata',
+    members: [
+      { name: 'Subhash Chandra Bose', relation: 'Head', generation: 1, age: 52, bloodGroup: 'O+', occupation: 'Managing Director', businessName: 'Bose Logistics' },
+      { name: 'Srabani Bose', relation: 'Spouse', generation: 1, age: 48, bloodGroup: 'A+', occupation: 'School Principal' },
+      { name: 'Shreya Bose', relation: 'Daughter', generation: 2, age: 23, bloodGroup: 'O+', occupation: 'Medical Student (MBBS)' },
+      { name: 'Sourav Bose', relation: 'Son', generation: 2, age: 19, bloodGroup: 'A+', occupation: 'Engineering Undergraduate' }
+    ]
+  }
+];
+
+export const INITIAL_BLOOD_DONORS: BloodDonor[] = [
+  {
+    id: 'donor-1',
+    orgId: 'org-1',
+    name: 'Anirban Mukherjee',
+    bloodGroup: 'A+',
+    phone: '+91 98310 44556',
+    location: 'Rashbehari Avenue, Ballygunge',
+    city: 'Kolkata',
+    lastDonatedDate: '2026-03-10',
+    isAvailable: true,
+    totalDonationsCount: 14
+  },
+  {
+    id: 'donor-2',
+    orgId: 'org-1',
+    name: 'Subhash Chandra Bose',
+    bloodGroup: 'O+',
+    phone: '+91 98301 99887',
+    location: 'Ballygunge Place',
+    city: 'Kolkata',
+    lastDonatedDate: '2026-01-15',
+    isAvailable: true,
+    totalDonationsCount: 22
+  },
+  {
+    id: 'donor-3',
+    orgId: 'org-1',
+    name: 'Dr. Sujata Sen',
+    bloodGroup: 'AB+',
+    phone: '+91 98315 77665',
+    location: 'Lansdowne',
+    city: 'Kolkata',
+    lastDonatedDate: '2025-11-20',
+    isAvailable: true,
+    totalDonationsCount: 8
+  },
+  {
+    id: 'donor-4',
+    orgId: 'org-1',
+    name: 'Pritam Das (Rare Donor)',
+    bloodGroup: 'O-',
+    phone: '+91 98308 99112',
+    location: 'Gariahat',
+    city: 'Kolkata',
+    lastDonatedDate: '2026-04-05',
+    isAvailable: true,
+    totalDonationsCount: 11
+  },
+  {
+    id: 'donor-5',
+    orgId: 'org-2',
+    name: 'Pooja Jaiswal',
+    bloodGroup: 'B-',
+    phone: '+91 98712 33445',
+    location: 'Gurugram Sector 43',
+    city: 'Delhi NCR',
+    lastDonatedDate: '2026-02-14',
+    isAvailable: true,
+    totalDonationsCount: 6
+  }
+];
+
+export const INITIAL_BUSINESSES: BusinessListing[] = [
+  {
+    id: 'biz-01',
+    orgId: 'org-1',
+    businessName: 'Bose Logistics & Supply Chain Pvt Ltd',
+    category: 'Logistics, Freight & Transport',
+    ownerName: 'Subhash Chandra Bose',
+    memberId: 'mem-101',
+    phone: '+91 98301 99887',
+    whatsappPhone: '919830199887',
+    address: '12B Ballygunge Place, Kolkata - 700019',
+    description: 'Pan-India cold chain transportation, warehousing, and customs clearance services for pharmaceutical & food industries.',
+    productsServices: ['Cold Chain Transport', 'Container Warehousing', 'Air Freight Forwarding', 'Supply Chain Tech'],
+    rating: 4.9,
+    reviewsCount: 128,
+    googleMapsUrl: 'https://maps.google.com/?q=22.5230,88.3654',
+    imageUrl: 'https://images.unsplash.com/photo-1586528116311-ad8dd3c8310d?auto=format&fit=crop&q=80&w=400'
+  },
+  {
+    id: 'biz-02',
+    orgId: 'org-1',
+    businessName: 'Mukherjee & Associates CA Firm',
+    category: 'Taxation, Audit & Legal',
+    ownerName: 'Anirban Mukherjee',
+    memberId: 'mem-102',
+    phone: '+91 98310 44556',
+    whatsappPhone: '919831044556',
+    address: '45 Rashbehari Avenue, Kolkata - 700026',
+    description: 'Specialized GST compliance, 80G/12A trust registration, corporate income tax audit, and startup valuation services.',
+    productsServices: ['NGO 80G/12A Registration', 'GST Returns & Audit', 'Company Incorporation', 'Income Tax Filing'],
+    rating: 4.8,
+    reviewsCount: 94,
+    googleMapsUrl: 'https://maps.google.com/?q=22.5188,88.3582',
+    imageUrl: 'https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?auto=format&fit=crop&q=80&w=400'
+  },
+  {
+    id: 'biz-03',
+    orgId: 'org-2',
+    businessName: 'Jaiswal Steel & Power Industries',
+    category: 'Manufacturing & Industrial',
+    ownerName: 'Rameshwar Jaiswal',
+    memberId: 'mem-201',
+    phone: '+91 98110 55511',
+    whatsappPhone: '919811055511',
+    address: '78 Barakhamba Road, Connaught Place, New Delhi',
+    description: 'TMT Bars, Structural Steel angles, channels, and solar mounting structure manufacturing.',
+    productsServices: ['Fe 550D TMT Rebars', 'Structural Beams & Channels', 'Solar PV Framing', 'Custom Fabrication'],
+    rating: 4.9,
+    reviewsCount: 210,
+    googleMapsUrl: 'https://maps.google.com/?q=28.6289,77.2219',
+    imageUrl: 'https://images.unsplash.com/photo-1504917595217-d4dc5ebe6122?auto=format&fit=crop&q=80&w=400'
+  }
+];
+
+export const INITIAL_CITIZEN_REQUESTS: CitizenRequest[] = [
+  {
+    id: 'cit-req-101',
+    orgId: 'org-1',
+    citizenName: 'Priya Sen',
+    phone: '+91 98311 88776',
+    email: 'priya.sen@gmail.com',
+    requestType: 'Welfare Scheme Application',
+    details: 'Applying for Swami Vivekananda Merit Scholarship for Class 12 engineering entry.',
+    status: 'In Processing',
+    date: '2026-07-28'
+  },
+  {
+    id: 'cit-req-102',
+    orgId: 'org-1',
+    citizenName: 'Ramesh Haldar',
+    phone: '+91 98302 33441',
+    email: 'ramesh.h@gmail.com',
+    requestType: 'Blood Donor Search',
+    details: 'Urgent requirement for O Negative blood at Chittaranjan Cancer Institute for father surgery.',
+    status: 'Approved',
+    date: '2026-07-30'
+  }
+];
+
+export const INITIAL_GOVT_SCHEMES: GovernmentScheme[] = [
+  {
+    id: 'govt-1',
+    title: 'Kanyashree Prakalpa (West Bengal)',
+    type: 'State Government',
+    department: 'Department of Women & Child Development',
+    description: 'Conditional cash transfer scheme to prevent early marriage and incentivize female secondary & higher education.',
+    eligibility: 'Unmarried girls aged 13-19 enrolled in recognized schools/colleges with family income < ₹1.2 Lakhs/year.',
+    benefitAmount: '₹1,000/year (K1) + ₹25,000 One-time grant (K2 at age 18)',
+    documentsRequired: ['Aadhaar Card', 'Unmarried Self-Declaration', 'Bank Account Passbook', 'School Enrolment Cert'],
+    portalUrl: 'https://wbkanyashree.gov.in'
+  },
+  {
+    id: 'govt-2',
+    title: 'PM-VIDYALAKSHMI Education Loan Scheme',
+    type: 'Central Government',
+    department: 'Ministry of Education',
+    description: 'Collateral-free, guarantee-free education loans for students admitted to premier higher education institutions.',
+    eligibility: 'Admitted to top 860 quality higher educational institutes with full tuition cover.',
+    benefitAmount: '100% Tuition Fee + Hostel Expenses Loan with 3% Interest Subvention',
+    documentsRequired: ['Class 10/12 Marksheets', 'Admission Letter', 'Income Certificate', 'PAN Card'],
+    portalUrl: 'https://vidyalakshmi.co.in'
+  },
+  {
+    id: 'govt-3',
+    title: 'Ayushman Bharat Pradhan Mantri Jan Arogya Yojana (PM-JAY)',
+    type: 'Central Government',
+    department: 'National Health Authority',
+    description: 'World\'s largest health insurance scheme offering cashless hospitalization up to ₹5 Lakhs per family per year.',
+    eligibility: 'Families identified under SECC database and vulnerable socio-economic categories.',
+    benefitAmount: '₹5,00,000 Cashless Health Cover per year per family',
+    documentsRequired: ['Aadhaar Card', 'Ration Card / PM-JAY Family Identification Card'],
+    portalUrl: 'https://pmjay.gov.in'
+  }
+];
+
+export const INITIAL_WHATSAPP_LOGS: WhatsAppAlertLog[] = [
+  {
+    id: 'wa-01',
+    recipientName: 'Subhash Chandra Bose',
+    phone: '+91 98301 99887',
+    type: 'Donation Receipt',
+    message: '🙏 Thank you Subhash Ji! Receipt #REC-2026-00421 for ₹1,00,000 towards Durga Puja Pandal Fund generated. Download 80G Tax Exemption Certificate here: https://durgapuja.communityos.in/rec/421',
+    status: 'Read',
+    sentTime: '2026-07-28 14:32'
+  },
+  {
+    id: 'wa-02',
+    recipientName: 'Anirban Mukherjee',
+    phone: '+91 98310 44556',
+    type: 'Meeting Alert',
+    message: '📢 Executive Committee Meeting scheduled for July 20, 2026 at 18:30 IST at Office Room 2. View Agenda & RSVP on DEINRIM CommunityOS.',
+    status: 'Delivered',
+    sentTime: '2026-07-18 10:15'
+  }
+];
+
+export const INITIAL_VAULT_DOCS = INITIAL_VAULT_DOCUMENTS;

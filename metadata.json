@@ -1,0 +1,6 @@
+{
+  "name": "DEINRIM CommunityOS",
+  "description": "India's premier AI-powered Community Operating System for Committees, Trusts, Samajs, Clubs, Schools & Welfare Organizations.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}

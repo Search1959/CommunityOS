@@ -1,0 +1,105 @@
+{
+  "entities": {
+    "donations": {
+      "title": "Donations",
+      "description": "80G and general community donations",
+      "properties": {
+        "id": { "type": "string" },
+        "orgId": { "type": "string" },
+        "donorName": { "type": "string" },
+        "donorPhone": { "type": "string" },
+        "donorPan": { "type": "string" },
+        "amount": { "type": "number" },
+        "purpose": { "type": "string" },
+        "paymentMethod": { "type": "string" },
+        "date": { "type": "string" },
+        "receiptNo": { "type": "string" },
+        "is80G": { "type": "boolean" },
+        "cert80GUrl": { "type": "string" }
+      },
+      "required": ["id", "donorName", "amount", "date"]
+    },
+    "applications": {
+      "title": "Welfare Applications",
+      "description": "Scholarship and medical aid applications",
+      "properties": {
+        "id": { "type": "string" },
+        "orgId": { "type": "string" },
+        "applicantName": { "type": "string" },
+        "schemeId": { "type": "string" },
+        "schemeName": { "type": "string" },
+        "amountRequested": { "type": "number" },
+        "appliedDate": { "type": "string" },
+        "status": { "type": "string" },
+        "applicantPhone": { "type": "string" },
+        "details": { "type": "string" }
+      },
+      "required": ["id", "applicantName", "schemeName", "status"]
+    },
+    "members": {
+      "title": "Community Members",
+      "description": "Registered community members",
+      "properties": {
+        "id": { "type": "string" },
+        "orgId": { "type": "string" },
+        "fullName": { "type": "string" },
+        "phone": { "type": "string" },
+        "email": { "type": "string" },
+        "city": { "type": "string" },
+        "state": { "type": "string" },
+        "membershipType": { "type": "string" },
+        "joinedDate": { "type": "string" },
+        "isVerified": { "type": "boolean" }
+      },
+      "required": ["id", "fullName", "phone"]
+    },
+    "vault_documents": {
+      "title": "Document Vault",
+      "description": "Uploaded statutory and audit documents",
+      "properties": {
+        "id": { "type": "string" },
+        "orgId": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "uploadDate": { "type": "string" },
+        "fileType": { "type": "string" },
+        "fileSize": { "type": "string" },
+        "fileUrl": { "type": "string" },
+        "ocrSummary": { "type": "string" }
+      },
+      "required": ["id", "title", "category"]
+    },
+    "organizations": {
+      "title": "SaaS Community Organizations",
+      "description": "Multi-tenant registered organizations",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "type": { "type": "string" },
+        "regNo": { "type": "string" },
+        "tagline": { "type": "string" },
+        "location": { "type": "string" },
+        "membersCount": { "type": "number" },
+        "totalDonationsYTD": { "type": "number" },
+        "activeSchemesCount": { "type": "number" }
+      },
+      "required": ["id", "name"]
+    },
+    "finance_transactions": {
+      "title": "Finance Transactions",
+      "description": "Income and expenditure entries",
+      "properties": {
+        "id": { "type": "string" },
+        "orgId": { "type": "string" },
+        "type": { "type": "string" },
+        "amount": { "type": "number" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "date": { "type": "string" },
+        "approvedBy": { "type": "string" },
+        "voucherNo": { "type": "string" }
+      },
+      "required": ["id", "type", "amount", "date"]
+    }
+  }
+}

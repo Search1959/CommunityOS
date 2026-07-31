@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   Calendar, 
   MapPin, 
@@ -36,7 +36,15 @@ export const EventModule: React.FC<EventModuleProps> = ({
   onUpdateEvent,
   onDeleteEvent,
 }) => {
-  const [selectedEvent, setSelectedEvent] = useState<EventItem>(events[0] || events[0]);
+  const [selectedEvent, setSelectedEvent] = useState<EventItem | null>(events[0] || null);
+
+  useEffect(() => {
+    if (events && events.length > 0) {
+      setSelectedEvent(events[0]);
+    } else {
+      setSelectedEvent(null);
+    }
+  }, [activeOrg.id, events]);
   const [search, setSearch] = useState('');
   const [currentPage, setCurrentPage] = useState(1);
   const [showAddModal, setShowAddModal] = useState(false);

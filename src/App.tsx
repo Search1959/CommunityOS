@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { Navbar } from './components/Navbar';
 import { Sidebar } from './components/Sidebar';
 import { AnalyticsDashboard } from './components/AnalyticsDashboard';
@@ -23,6 +23,7 @@ import { ReportsModule } from './components/ReportsModule';
 import { SuperAdminModule } from './components/SuperAdminModule';
 import { QRScannerModal } from './components/QRScannerModal';
 import { LoginModal } from './components/LoginModal';
+import { LandingHomePage } from './components/LandingHomePage';
 
 import { subscribeCollection, saveToFirestore } from './lib/firebase';
 
@@ -66,6 +67,7 @@ export default function App() {
   const [userCredentials, setUserCredentials] = useState<UserCredential[]>(INITIAL_USER_CREDENTIALS);
   const [currentUserCredential, setCurrentUserCredential] = useState<UserCredential>(INITIAL_USER_CREDENTIALS[0]);
   const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
+  const [showLandingHome, setShowLandingHome] = useState<boolean>(true);
 
   // App Master Datasets
   const [members, setMembers] = useState<Member[]>(INITIAL_MEMBERS);
@@ -307,12 +309,29 @@ export default function App() {
     }
   };
 
-  // Credential Management Handlers
+  const handlePortalLogin = (cred: UserCredential, targetOrg: Organization) => {
+    setCurrentUserCredential(cred);
+    setActiveOrg(targetOrg);
+    setShowLandingHome(false);
+
+    // Sync UI role preview if available
+    if (['Super Admin', 'Committee Admin', 'President', 'Secretary', 'Treasurer', 'Executive Member'].includes(cred.role)) {
+      setCurrentRole('President / Committee Exec');
+    } else if (['Member', 'Student', 'Parent'].includes(cred.role)) {
+      setCurrentRole('General Member');
+    } else {
+      setCurrentRole('Citizen Public');
+    }
+
+    setActiveModule('dashboard');
+  };
+
   const handleLoginSuccess = (cred: UserCredential) => {
     setCurrentUserCredential(cred);
     setShowLoginModal(false);
+    setShowLandingHome(false);
     // Sync UI role preview if available
-    if (['Super Admin'].includes(cred.role)) {
+    if (['Super Admin', 'Committee Admin', 'President', 'Secretary', 'Treasurer'].includes(cred.role)) {
       setCurrentRole('President / Committee Exec');
     } else if (['Member', 'Student', 'Parent'].includes(cred.role)) {
       setCurrentRole('General Member');
@@ -338,6 +357,28 @@ export default function App() {
     setUserCredentials((prev) => prev.filter((c) => c.id !== credId));
   };
 
+  // Tenant Isolation: Filter datasets by activeOrg.id
+  const tenantMembers = useMemo(() => members.filter((m) => m.orgId === activeOrg.id), [members, activeOrg.id]);
+  const tenantOfficeBearers = useMemo(() => officeBearers.filter((o) => o.orgId === activeOrg.id), [officeBearers, activeOrg.id]);
+  const tenantMeetings = useMemo(() => meetings.filter((m) => m.orgId === activeOrg.id), [meetings, activeOrg.id]);
+  const tenantSchemes = useMemo(() => schemes.filter((s) => s.orgId === activeOrg.id), [schemes, activeOrg.id]);
+  const tenantApplications = useMemo(() => applications.filter((a) => a.orgId === activeOrg.id), [applications, activeOrg.id]);
+  const tenantDonations = useMemo(() => donations.filter((d) => d.orgId === activeOrg.id), [donations, activeOrg.id]);
+  const tenantTransactions = useMemo(() => transactions.filter((t) => t.orgId === activeOrg.id), [transactions, activeOrg.id]);
+  const tenantEvents = useMemo(() => events.filter((e) => e.orgId === activeOrg.id), [events, activeOrg.id]);
+  const tenantVaultDocs = useMemo(() => vaultDocs.filter((v) => v.orgId === activeOrg.id), [vaultDocs, activeOrg.id]);
+  const tenantStudents = useMemo(() => students.filter((s) => !(s as any).orgId || (s as any).orgId === activeOrg.id), [students, activeOrg.id]);
+
+  if (showLandingHome) {
+    return (
+      <LandingHomePage
+        organizations={organizations}
+        userCredentials={userCredentials}
+        onLogin={handlePortalLogin}
+      />
+    );
+  }
+
   return (
     <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
       
@@ -350,6 +391,7 @@ export default function App() {
         onChangeRole={setCurrentRole}
         currentUserCredential={currentUserCredential}
         onOpenLoginModal={() => setShowLoginModal(true)}
+        onGoHome={() => setShowLandingHome(true)}
         onOpenAIChat={() => setActiveModule('ai-chat')}
         onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
       />
@@ -371,8 +413,8 @@ export default function App() {
           {activeModule === 'dashboard' && (
             <AnalyticsDashboard
               activeOrg={activeOrg}
-              applications={applications}
-              donations={donations}
+              applications={tenantApplications}
+              donations={tenantDonations}
               onApproveApplication={handleApproveApp}
               onRejectApplication={handleRejectApp}
               onNavigateModule={setActiveModule}
@@ -381,12 +423,12 @@ export default function App() {
           )}
 
           {activeModule === 'org-profile' && (
-            <OrgProfileModule activeOrg={activeOrg} officeBearers={officeBearers} />
+            <OrgProfileModule activeOrg={activeOrg} officeBearers={tenantOfficeBearers} />
           )}
 
           {activeModule === 'membership' && (
             <MembershipModule
-              members={members}
+              members={tenantMembers}
               activeOrg={activeOrg}
               organizations={organizations}
               onAddMember={handleAddMember}
@@ -397,8 +439,8 @@ export default function App() {
 
           {activeModule === 'committee' && (
             <CommitteeModule
-              meetings={meetings}
-              officeBearers={officeBearers}
+              meetings={tenantMeetings}
+              officeBearers={tenantOfficeBearers}
               activeOrg={activeOrg}
               onAddMeeting={handleAddMeeting}
               onUpdateMeeting={handleUpdateMeeting}
@@ -408,8 +450,8 @@ export default function App() {
 
           {activeModule === 'welfare' && (
             <WelfareModule
-              schemes={schemes}
-              applications={applications}
+              schemes={tenantSchemes}
+              applications={tenantApplications}
               activeOrg={activeOrg}
               onApplyScheme={handleApplyScheme}
               onApproveApp={handleApproveApp}
@@ -420,7 +462,7 @@ export default function App() {
 
           {activeModule === 'donations' && (
             <DonationModule
-              donations={donations}
+              donations={tenantDonations}
               activeOrg={activeOrg}
               onAddDonation={handleAddDonation}
               onUpdateDonation={handleUpdateDonation}
@@ -430,7 +472,7 @@ export default function App() {
 
           {activeModule === 'finance' && (
             <FinanceModule
-              transactions={transactions}
+              transactions={tenantTransactions}
               activeOrg={activeOrg}
               onAddTransaction={handleAddTransaction}
               onUpdateTransaction={handleUpdateTransaction}
@@ -440,7 +482,7 @@ export default function App() {
 
           {activeModule === 'events' && (
             <EventModule
-              events={events}
+              events={tenantEvents}
               activeOrg={activeOrg}
               onOpenQRScanner={() => setShowQRScanner(true)}
               onUpdateEvent={handleUpdateEvent}
@@ -449,12 +491,12 @@ export default function App() {
           )}
 
           {activeModule === 'school' && (
-            <SchoolModule students={students} activeOrg={activeOrg} />
+            <SchoolModule students={tenantStudents} activeOrg={activeOrg} />
           )}
 
           {activeModule === 'vault' && (
             <VaultOCRModule
-              documents={vaultDocs}
+              documents={tenantVaultDocs}
               activeOrg={activeOrg}
               onUploadExtractDoc={handleUploadExtractDoc}
             />
@@ -471,18 +513,18 @@ export default function App() {
           {activeModule === 'citizen-portal' && (
             <CitizenPortalModule
               activeOrg={activeOrg}
-              members={members}
-              schemes={schemes}
+              members={tenantMembers}
+              schemes={tenantSchemes}
               onNavigateModule={setActiveModule}
             />
           )}
 
           {activeModule === 'family-tree' && (
-            <FamilyTreeModule activeOrg={activeOrg} members={members} />
+            <FamilyTreeModule activeOrg={activeOrg} members={tenantMembers} />
           )}
 
           {activeModule === 'blood-bank' && (
-            <BloodBankModule members={members} activeOrg={activeOrg} />
+            <BloodBankModule members={tenantMembers} activeOrg={activeOrg} />
           )}
 
           {activeModule === 'medical-camp' && (
@@ -490,7 +532,7 @@ export default function App() {
           )}
 
           {activeModule === 'businesses' && (
-            <BusinessDirectoryModule activeOrg={activeOrg} members={members} />
+            <BusinessDirectoryModule activeOrg={activeOrg} members={tenantMembers} />
           )}
 
           {activeModule === 'govt-schemes' && (

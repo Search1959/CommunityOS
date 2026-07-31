@@ -119,6 +119,31 @@ export const INITIAL_ORGANIZATIONS: Organization[] = [
     themeColor: '#2563eb', // Blue
     bannerUrl: 'https://images.unsplash.com/photo-1523050854058-8df90110c9f1?auto=format&fit=crop&q=80&w=1200',
     logoUrl: 'https://images.unsplash.com/photo-1546410531-bb4caa6b424d?auto=format&fit=crop&q=80&w=200'
+  },
+  {
+    id: 'org-5',
+    slug: 'chaltabagan',
+    name: 'Chalta Bagan Durga Puja Committee',
+    type: 'Puja Committee',
+    tagline: '83 Years of Heritage, Art, Dhak Beats & Social Empowerment in North Kolkata',
+    regNo: 'S/1L/94821/1943',
+    pan: 'AAATC9812L',
+    gst: '19AAATC9812L1Z4',
+    eightyG: 'CIT-KOL/80G/2022-23/C-119',
+    twelveA: 'AAATC9812L12A3',
+    address: 'Manicktala Street, Lohapatty, Kolkata - 700006',
+    phone: '+91 98311 55667',
+    email: 'admin@chaltabagandurgapuja.org',
+    websiteDomain: 'chaltabagan.communityos.in',
+    mission: 'To organize landmark eco-friendly Durga Puja celebrations, promote Dhunuchi Naach & Dhak traditions, and fund healthcare and scholarship drives throughout North Kolkata.',
+    history: 'Established in 1943, Chalta Bagan Lohapatty is renowned across India for award-winning theme pandals, grand Sindoor Khela, Dhak competitions, and community blood donation camps.',
+    constitutionSummary: 'Governed by a 21-member Executive Committee. Conducts annual audits and publishes transparent financial statement to all community members.',
+    membersCount: 1850,
+    totalDonationsYTD: 5400000,
+    activeSchemesCount: 5,
+    themeColor: '#7c3aed', // Purple/Violet
+    bannerUrl: 'https://images.unsplash.com/photo-1514222709107-a180c68d72b4?auto=format&fit=crop&q=80&w=1200',
+    logoUrl: 'https://images.unsplash.com/photo-1628102491629-778571d893a3?auto=format&fit=crop&q=80&w=200'
   }
 ];
 
@@ -452,6 +477,51 @@ export const INITIAL_MEMBERS: Member[] = [
     annualFeePaid: true,
     emergencyContact: { name: 'Mona Ganguly', phone: '+91 98308 11224', relation: 'Spouse' },
     qrCodeData: 'DV-MEMBER-402-ACTIVE'
+  },
+  // --- Org 5: Chalta Bagan Durga Puja Committee ---
+  {
+    id: 'mem-501',
+    membershipNo: 'CB-2026-001',
+    orgId: 'org-5',
+    name: 'Sunderlal Agarwal',
+    photoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200',
+    roleInOrg: 'Committee Admin',
+    committeeName: 'Executive Committee',
+    bloodGroup: 'B+',
+    occupation: 'Textile & Iron Merchant',
+    businessName: 'Agarwal Metals & Fabrics',
+    phone: '+91 98311 55667',
+    email: 'admin@chaltabagandurgapuja.org',
+    address: 'Manicktala Street, Lohapatty, Kolkata - 700006',
+    familyMembersCount: 4,
+    status: 'Active',
+    joinDate: '2011-05-10',
+    renewalDueDate: '2027-03-31',
+    annualFeePaid: true,
+    emergencyContact: { name: 'Sunita Agarwal', phone: '+91 98311 55668', relation: 'Spouse' },
+    qrCodeData: 'CB-MEMBER-501-ACTIVE'
+  },
+  {
+    id: 'mem-502',
+    membershipNo: 'CB-2026-002',
+    orgId: 'org-5',
+    name: 'Ashok Jaiswal',
+    photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+    roleInOrg: 'President',
+    committeeName: 'Executive Committee',
+    bloodGroup: 'O+',
+    occupation: 'Industrialist & Philanthropist',
+    businessName: 'Jaiswal Infrastructure & Realty',
+    phone: '+91 98311 99000',
+    email: 'president@chaltabagandurgapuja.org',
+    address: 'Girish Park North, Kolkata - 700006',
+    familyMembersCount: 5,
+    status: 'Active',
+    joinDate: '2008-01-15',
+    renewalDueDate: '2027-03-31',
+    annualFeePaid: true,
+    emergencyContact: { name: 'Kiran Jaiswal', phone: '+91 98311 99001', relation: 'Spouse' },
+    qrCodeData: 'CB-MEMBER-502-ACTIVE'
   }
 ];
 
@@ -495,6 +565,46 @@ export const INITIAL_OFFICE_BEARERS: CommitteeOfficeBearer[] = [
     email: 'dr.sujata.sen@senclinic.org',
     termPeriod: '2025 - 2027',
     photoUrl: 'https://images.unsplash.com/photo-1573496359142-b8d87734a5a2?auto=format&fit=crop&q=80&w=200'
+  },
+  {
+    id: 'ob-5',
+    orgId: 'org-2',
+    name: 'Suresh Kumar Jaiswal',
+    designation: 'President',
+    phone: '+91 98100 12345',
+    email: 'suresh@jaiswalsamaj.org',
+    termPeriod: '2025 - 2027',
+    photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200'
+  },
+  {
+    id: 'ob-6',
+    orgId: 'org-2',
+    name: 'Ramakant Jaiswal',
+    designation: 'Secretary',
+    phone: '+91 98111 88822',
+    email: 'ramakant@jaiswalsamaj.org',
+    termPeriod: '2025 - 2027',
+    photoUrl: 'https://images.unsplash.com/photo-1500648767791-00dcc994a43e?auto=format&fit=crop&q=80&w=200'
+  },
+  {
+    id: 'ob-7',
+    orgId: 'org-5',
+    name: 'Ashok Jaiswal',
+    designation: 'President',
+    phone: '+91 98311 99000',
+    email: 'president@chaltabagandurgapuja.org',
+    termPeriod: '2025 - 2027',
+    photoUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200'
+  },
+  {
+    id: 'ob-8',
+    orgId: 'org-5',
+    name: 'Sunderlal Agarwal',
+    designation: 'Secretary',
+    phone: '+91 98311 55667',
+    email: 'admin@chaltabagandurgapuja.org',
+    termPeriod: '2025 - 2027',
+    photoUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200'
   }
 ];
 
@@ -830,6 +940,40 @@ export const INITIAL_EVENTS: EventItem[] = [
     volunteersAssigned: 50,
     budget: 2500000,
     bannerUrl: 'https://images.unsplash.com/photo-1511578314322-379afb476865?auto=format&fit=crop&q=80&w=800',
+    galleryImages: [],
+    status: 'Upcoming'
+  },
+  {
+    id: 'evt-2026-05',
+    orgId: 'org-5',
+    title: 'Chalta Bagan Lohapatty Grand Durga Puja 2026 (83rd Edition)',
+    category: 'Puja / Festival',
+    startDate: '2026-10-18',
+    endDate: '2026-10-23',
+    venue: 'Manicktala Lohapatty Grounds, Kolkata',
+    description: 'Landmark eco-friendly Durga Puja pandal featuring award-winning artisanal craftsmanship, royal Sindoor Khela, and grand Dhak performance.',
+    expectedAttendees: 1200000,
+    registeredCount: 3500,
+    volunteersAssigned: 90,
+    budget: 6500000,
+    bannerUrl: 'https://images.unsplash.com/photo-1514222709107-a180c68d72b4?auto=format&fit=crop&q=80&w=800',
+    galleryImages: [],
+    status: 'Upcoming'
+  },
+  {
+    id: 'evt-2026-06',
+    orgId: 'org-5',
+    title: 'North Kolkata Grand Dhunuchi Naach & Dhak Utsav 2026',
+    category: 'Cultural Function',
+    startDate: '2026-10-21',
+    endDate: '2026-10-21',
+    venue: 'Chalta Bagan Main Pandal Courtyard',
+    description: 'Traditional Dhunuchi dance competition featuring 50+ traditional Dhakis and dancers with cash awards and cultural honors.',
+    expectedAttendees: 80000,
+    registeredCount: 1200,
+    volunteersAssigned: 35,
+    budget: 850000,
+    bannerUrl: 'https://images.unsplash.com/photo-1628102491629-778571d893a3?auto=format&fit=crop&q=80&w=800',
     galleryImages: [],
     status: 'Upcoming'
   }
@@ -1306,5 +1450,37 @@ export const INITIAL_USER_CREDENTIALS: UserCredential[] = [
     createdAt: '2026-01-01',
     avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
     phone: '+91 90000 00000'
+  },
+  {
+    id: 'cred-008',
+    name: 'Sunderlal Agarwal (Chalta Bagan Admin)',
+    email: 'admin@chaltabagandurgapuja.org',
+    username: 'chalta_admin',
+    passwordHash: 'chalta123',
+    role: 'Committee Admin',
+    orgId: 'org-5',
+    orgName: 'Chalta Bagan Durga Puja Committee',
+    status: 'Active',
+    hierarchyLevel: 2,
+    lastLogin: '2026-07-31 07:15 AM',
+    createdAt: '2026-01-20',
+    avatarUrl: 'https://images.unsplash.com/photo-1472099645785-5658abf4ff4e?auto=format&fit=crop&q=80&w=200',
+    phone: '+91 98311 55667'
+  },
+  {
+    id: 'cred-009',
+    name: 'Ashok Jaiswal (Chalta Bagan President)',
+    email: 'president@chaltabagandurgapuja.org',
+    username: 'president_chalta',
+    passwordHash: 'pres123',
+    role: 'President',
+    orgId: 'org-5',
+    orgName: 'Chalta Bagan Durga Puja Committee',
+    status: 'Active',
+    hierarchyLevel: 2,
+    lastLogin: '2026-07-31 07:10 AM',
+    createdAt: '2026-01-20',
+    avatarUrl: 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200',
+    phone: '+91 98311 99000'
   }
 ];

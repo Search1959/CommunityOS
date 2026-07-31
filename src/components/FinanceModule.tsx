@@ -283,47 +283,152 @@ export const FinanceModule: React.FC<FinanceModuleProps> = ({
       )}
 
       {/* Tab 3: Balance Sheet Statement */}
-      {activeTab === 'balancesheet' && (
-        <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
-          <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
-            <div>
-              <h2 className="text-base font-bold text-slate-900 dark:text-white">Audited Balance Sheet & P&L Statement</h2>
-              <p className="text-xs text-slate-500">As on March 31, 2026 • Certified by Sen & Partners CA</p>
-            </div>
-            <button
-              onClick={() => alert('Downloaded Certified Balance Sheet PDF')}
-              className="px-3 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center gap-1.5"
-            >
-              <Download className="w-3.5 h-3.5" />
-              <span>Download Signed Audit Report</span>
-            </button>
-          </div>
+      {activeTab === 'balancesheet' && (() => {
+        // Dynamic balance sheet tailored to activeOrg
+        const getBalanceSheetInfo = (orgId: string) => {
+          switch (orgId) {
+            case 'org-2':
+              return {
+                auditor: 'M.K. Jaiswal & Co. Chartered Accountants',
+                liabilities: [
+                  { label: 'Jaiswal Community General Corpus Fund', amount: '₹4,15,20,000' },
+                  { label: 'Matrimonial & Youth Sammelan Reserve', amount: '₹60,00,000' },
+                  { label: 'Life Membership Fee Advances', amount: '₹40,00,000' },
+                ],
+                totalLiabilities: '₹5,15,20,000',
+                assets: [
+                  { label: 'Jaiswal Bhawan Premises & Community Hall', amount: '₹3,20,00,000' },
+                  { label: 'Fixed Deposits with Punjab National Bank', amount: '₹1,50,00,000' },
+                  { label: 'Savings Bank Account Balance (SBI)', amount: '₹45,20,000' },
+                ],
+                totalAssets: '₹5,15,20,000',
+              };
+            case 'org-3':
+              return {
+                auditor: 'R.K. Sharma & Associates CA',
+                liabilities: [
+                  { label: 'Temple Seva & Construction Capital Corpus', amount: '₹12,00,00,000' },
+                  { label: 'Annakshetra & Bhandara Reserve Fund', amount: '₹1,05,00,000' },
+                  { label: 'Nitya Seva & Puja Advance Collections', amount: '₹50,00,000' },
+                ],
+                totalLiabilities: '₹13,55,00,000',
+                assets: [
+                  { label: 'Temple Complex & Seva Sadan Land', amount: '₹8,50,00,000' },
+                  { label: 'Fixed Deposits with State Bank of India', amount: '₹4,20,00,000' },
+                  { label: 'Savings Bank Account (HDFC Bank)', amount: '₹85,00,000' },
+                ],
+                totalAssets: '₹13,55,00,000',
+              };
+            case 'org-4':
+              return {
+                auditor: 'Gupta & Roy CA',
+                liabilities: [
+                  { label: 'Educational Trust Building & Infrastructure Fund', amount: '₹2,50,00,000' },
+                  { label: 'Student Scholarship Reserve', amount: '₹45,00,000' },
+                  { label: 'Annual Academic & Lab Deposits', amount: '₹17,50,00,000' },
+                ],
+                totalLiabilities: '₹3,12,50,000',
+                assets: [
+                  { label: 'Vidyapeeth School Building & Computer Labs', amount: '₹2,10,00,000' },
+                  { label: 'Educational Fixed Deposits (ICICI Bank)', amount: '₹80,00,000' },
+                  { label: 'School Operating Bank Account Balance', amount: '₹22,50,000' },
+                ],
+                totalAssets: '₹3,12,50,000',
+              };
+            case 'org-5':
+              return {
+                auditor: 'D.B. Banerjee & Co. Chartered Accountants',
+                liabilities: [
+                  { label: 'Chalta Bagan Durga Puja General Corpus Fund', amount: '₹1,95,00,000' },
+                  { label: 'Dhak Utsav & Cultural Festival Reserve', amount: '₹38,50,000' },
+                  { label: 'Durga Puja 2026 Corporate Advance Sponsorships', amount: '₹25,00,000' },
+                ],
+                totalLiabilities: '₹2,58,50,000',
+                assets: [
+                  { label: 'Manicktala Lohapatty Community Hall & Storehouse', amount: '₹1,45,00,000' },
+                  { label: 'Emergency Reserve Fixed Deposit (SBI)', amount: '₹85,00,000' },
+                  { label: 'HDFC Bank Operating Account Balance', amount: '₹28,50,000' },
+                ],
+                totalAssets: '₹2,58,50,000',
+              };
+            case 'org-1':
+            default:
+              return {
+                auditor: 'Sen & Partners CA',
+                liabilities: [
+                  { label: 'General Community Corpus Fund', amount: '₹2,45,80,000' },
+                  { label: 'Welfare Reserve Fund', amount: '₹50,00,000' },
+                  { label: 'Durga Puja 2026 Advance Sponsorships', amount: '₹35,00,000' },
+                ],
+                totalLiabilities: '₹3,30,80,000',
+                assets: [
+                  { label: `${activeOrg.name} Premises Land & Building`, amount: '₹1,80,00,000' },
+                  { label: 'Fixed Deposits with State Bank of India', amount: '₹1,15,00,000' },
+                  { label: 'Savings Bank Account Balance (Yes Bank)', amount: '₹35,80,000' },
+                ],
+                totalAssets: '₹3,30,80,000',
+              };
+          }
+        };
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
-            {/* Liabilities & Corpus */}
-            <div className="space-y-3">
-              <h3 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] text-rose-500">Liabilities & Capital Corpus</h3>
-              <div className="p-3 rounded-xl border border-slate-100 dark:border-slate-800 space-y-2">
-                <div className="flex justify-between"><span>General Community Corpus Fund</span><span className="font-mono font-bold">₹2,45,80,000</span></div>
-                <div className="flex justify-between"><span>Welfare Reserve Fund</span><span className="font-mono font-bold">₹50,00,000</span></div>
-                <div className="flex justify-between"><span>Durga Puja 2026 Advance Sponsorships</span><span className="font-mono font-bold">₹35,00,000</span></div>
-                <div className="flex justify-between pt-2 border-t font-bold text-slate-900 dark:text-white"><span>Total Liabilities & Capital</span><span className="font-mono">₹3,30,80,000</span></div>
+        const bs = getBalanceSheetInfo(activeOrg.id);
+
+        return (
+          <div className="p-6 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm space-y-6">
+            <div className="flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-3">
+              <div>
+                <h2 className="text-base font-bold text-slate-900 dark:text-white">Audited Balance Sheet & P&L Statement</h2>
+                <p className="text-xs text-slate-500">
+                  {activeOrg.name} • As on March 31, 2026 • Certified by {bs.auditor}
+                </p>
+              </div>
+              <button
+                onClick={() => alert(`Downloaded Certified Balance Sheet PDF for ${activeOrg.name}`)}
+                className="px-3 py-1.5 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center gap-1.5"
+              >
+                <Download className="w-3.5 h-3.5" />
+                <span>Download Signed Audit Report</span>
+              </button>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-6 text-xs">
+              {/* Liabilities & Corpus */}
+              <div className="space-y-3">
+                <h3 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] text-rose-500">Liabilities & Capital Corpus</h3>
+                <div className="p-3 rounded-xl border border-slate-100 dark:border-slate-800 space-y-2">
+                  {bs.liabilities.map((item, idx) => (
+                    <div key={idx} className="flex justify-between">
+                      <span>{item.label}</span>
+                      <span className="font-mono font-bold">{item.amount}</span>
+                    </div>
+                  ))}
+                  <div className="flex justify-between pt-2 border-t font-bold text-slate-900 dark:text-white">
+                    <span>Total Liabilities & Capital</span>
+                    <span className="font-mono">{bs.totalLiabilities}</span>
+                  </div>
+                </div>
+              </div>
+
+              {/* Assets */}
+              <div className="space-y-3">
+                <h3 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] text-emerald-500">Assets & Bank Deposits</h3>
+                <div className="p-3 rounded-xl border border-slate-100 dark:border-slate-800 space-y-2">
+                  {bs.assets.map((item, idx) => (
+                    <div key={idx} className="flex justify-between">
+                      <span>{item.label}</span>
+                      <span className="font-mono font-bold">{item.amount}</span>
+                    </div>
+                  ))}
+                  <div className="flex justify-between pt-2 border-t font-bold text-slate-900 dark:text-white">
+                    <span>Total Property & Assets</span>
+                    <span className="font-mono">{bs.totalAssets}</span>
+                  </div>
+                </div>
               </div>
             </div>
-
-            {/* Assets */}
-            <div className="space-y-3">
-              <h3 className="font-bold text-slate-900 dark:text-white uppercase tracking-wider text-[11px] text-emerald-500">Assets & Bank Deposits</h3>
-              <div className="p-3 rounded-xl border border-slate-100 dark:border-slate-800 space-y-2">
-                <div className="flex justify-between"><span>Gariahat Premises Land & Building</span><span className="font-mono font-bold">₹1,80,00,000</span></div>
-                <div className="flex justify-between"><span>Fixed Deposits with State Bank of India</span><span className="font-mono font-bold">₹1,15,00,000</span></div>
-                <div className="flex justify-between"><span>Savings Bank Account Balance (Yes Bank)</span><span className="font-mono font-bold">₹35,80,000</span></div>
-                <div className="flex justify-between pt-2 border-t font-bold text-slate-900 dark:text-white"><span>Total Property & Assets</span><span className="font-mono">₹3,30,80,000</span></div>
-              </div>
-            </div>
           </div>
-        </div>
-      )}
+        );
+      })()}
 
       {/* Add Voucher Modal */}
       {showAddModal && (

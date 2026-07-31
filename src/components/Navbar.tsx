@@ -28,6 +28,7 @@ interface NavbarProps {
   onChangeRole: (role: UserRole) => void;
   currentUserCredential?: UserCredential;
   onOpenLoginModal?: () => void;
+  onGoHome?: () => void;
   isDarkMode?: boolean;
   onToggleDarkMode?: () => void;
   onOpenAIChat: () => void;
@@ -46,6 +47,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   onChangeRole,
   currentUserCredential,
   onOpenLoginModal,
+  onGoHome,
   isDarkMode = true,
   onToggleDarkMode,
   onOpenAIChat,
@@ -57,6 +59,12 @@ export const Navbar: React.FC<NavbarProps> = ({
 }) => {
   const [showOrgDropdown, setShowOrgDropdown] = useState(false);
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
+
+  const isSuperAdmin = currentUserCredential?.role === 'Super Admin' || currentUserCredential?.orgId === 'all';
+
+  const visibleOrganizations = isSuperAdmin
+    ? organizations
+    : organizations.filter((org) => org.id === activeOrg.id || org.id === currentUserCredential?.orgId);
 
   const rolesList: UserRole[] = [
     'Super Admin',
@@ -94,8 +102,9 @@ export const Navbar: React.FC<NavbarProps> = ({
           )}
 
           <div 
-            onClick={() => onNavigateModule?.('dashboard')}
+            onClick={onGoHome || (() => onNavigateModule?.('dashboard'))}
             className="flex items-center gap-2 cursor-pointer group"
+            title="Return to Home Landing Portal"
           >
             <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold shadow-sm shadow-indigo-600/30 group-hover:scale-105 transition-transform">
               <span className="text-sm font-black">D</span>
@@ -111,6 +120,18 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             </div>
           </div>
+
+          {/* Portal Home Button */}
+          {onGoHome && (
+            <button
+              onClick={onGoHome}
+              className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/80 text-rose-700 dark:text-rose-300 text-xs font-bold hover:bg-rose-100 dark:hover:bg-rose-900/60 transition-colors"
+              title="Return to Organization Landing Portal"
+            >
+              <Building2 className="w-3.5 h-3.5 text-rose-500" />
+              <span>Portal Home</span>
+            </button>
+          )}
 
           <div className="h-5 w-px bg-slate-200 dark:bg-slate-800 mx-1 hidden md:block" />
 
@@ -128,11 +149,18 @@ export const Navbar: React.FC<NavbarProps> = ({
 
             {showOrgDropdown && (
               <div className="absolute left-0 mt-2 w-72 sm:w-80 rounded-xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-2xl p-2 z-50 animate-in fade-in zoom-in-95 duration-150">
-                <div className="px-2 py-1.5 text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
-                  Select Organization (Multi-Tenant)
+                <div className="px-2 py-1.5 flex items-center justify-between border-b border-slate-100 dark:border-slate-800 pb-2 mb-1">
+                  <span className="text-[11px] font-bold uppercase tracking-wider text-slate-400 dark:text-slate-500">
+                    {isSuperAdmin ? 'All Organizations (Super Admin)' : 'Authorized Tenant Domain'}
+                  </span>
+                  {!isSuperAdmin && (
+                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 font-extrabold uppercase">
+                      Tenant Isolated
+                    </span>
+                  )}
                 </div>
                 <div className="space-y-1 max-h-64 overflow-y-auto">
-                  {organizations.map((org) => (
+                  {visibleOrganizations.map((org) => (
                     <button
                       key={org.id}
                       onClick={() => {
@@ -155,17 +183,32 @@ export const Navbar: React.FC<NavbarProps> = ({
                     </button>
                   ))}
                 </div>
-                <div className="pt-2 mt-2 border-t border-slate-200 dark:border-slate-800">
-                  <button
-                    onClick={() => {
-                      setShowOrgDropdown(false);
-                      onNavigateModule?.('super-admin');
-                    }}
-                    className="w-full py-2 px-3 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-sm"
-                  >
-                    <Plus className="w-3.5 h-3.5" />
-                    <span>+ Onboard New Organization Tenant</span>
-                  </button>
+                <div className="pt-2 mt-2 border-t border-slate-200 dark:border-slate-800 space-y-1.5">
+                  {onGoHome && (
+                    <button
+                      onClick={() => {
+                        setShowOrgDropdown(false);
+                        onGoHome();
+                      }}
+                      className="w-full py-2 px-3 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+                    >
+                      <Building2 className="w-3.5 h-3.5" />
+                      <span>Switch Organization / Portal Home</span>
+                    </button>
+                  )}
+
+                  {isSuperAdmin && (
+                    <button
+                      onClick={() => {
+                        setShowOrgDropdown(false);
+                        onNavigateModule?.('super-admin');
+                      }}
+                      className="w-full py-2 px-3 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 font-bold text-xs flex items-center justify-center gap-1.5 transition-colors"
+                    >
+                      <Plus className="w-3.5 h-3.5" />
+                      <span>+ Onboard New Organization Tenant</span>
+                    </button>
+                  )}
                 </div>
               </div>
             )}

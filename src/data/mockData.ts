@@ -17,7 +17,9 @@ import {
   CitizenRequest, 
   GovernmentScheme, 
   WhatsAppAlertLog,
-  UserCredential
+  UserCredential,
+  MedicalCamp,
+  FamilyBranch
 } from '../types';
 
 export const INITIAL_ORGANIZATIONS: Organization[] = [
@@ -1543,3 +1545,138 @@ export const INITIAL_USER_CREDENTIALS: UserCredential[] = [
     phone: '+91 98311 99000'
   }
 ];
+
+export const INITIAL_MEDICAL_CAMPS: MedicalCamp[] = [
+  {
+    id: 'camp-1',
+    orgId: 'org-1',
+    title: 'Free Cardiac & Eye Cataract Screening Camp',
+    category: 'Cardiac & Eye Screening',
+    hospitalPartner: 'Apollo Gleneagles Hospitals & Lions Eye Hospital',
+    doctors: 'Dr. S. K. Roy (Cardiologist), Dr. Ananya Sen (Ophthalmologist)',
+    venue: 'Community Hall Premises, 15/2 Gariahat Road, Kolkata',
+    date: '2026-08-15',
+    time: '09:00 AM - 04:00 PM',
+    description: 'In collaboration with Apollo Gleneagles Hospitals. Free spectacles distribution, blood glucose screening & ECG testing for senior citizens.',
+    status: 'Upcoming',
+    enrolledPatientsCount: 180,
+    beneficiariesCount: 0,
+    contactPerson: 'Debabrata Mukherjee',
+    phone: '+91 98301 22334'
+  },
+  {
+    id: 'camp-2',
+    orgId: 'org-1',
+    title: 'General Health, Diabetes & Blood Pressure Camp',
+    category: 'General OPD & Diabetes',
+    hospitalPartner: 'Peerless Hospital & B. R. Singh Medical Wing',
+    doctors: 'Dr. Arindam Bose (General Physician), Dr. Priya Dutta (Diabetologist)',
+    venue: 'Ekdalia Evergreen Club Premises',
+    date: '2026-05-10',
+    time: '10:00 AM - 03:00 PM',
+    description: 'Treated 320 community members. Disbursed free essential medicines, vitamins, and insulin checkup kits worth ₹85,000.',
+    status: 'Completed',
+    enrolledPatientsCount: 320,
+    beneficiariesCount: 320,
+    medicinesDisbursedValue: '₹85,000',
+    contactPerson: 'Subir Das',
+    phone: '+91 98310 99887'
+  },
+  {
+    id: 'camp-3',
+    orgId: 'org-1',
+    title: 'Pediatric Health Checkup & Vaccination Drive',
+    category: 'Pediatric Health Drive',
+    hospitalPartner: 'Kolkata Child Care Foundation',
+    doctors: 'Dr. Meera Banerji (Pediatrician)',
+    venue: 'DEINRIM Vidyapeeth School Campus',
+    date: '2026-09-05',
+    time: '09:30 AM - 02:30 PM',
+    description: 'Free nutritional counseling, Deworming tablets, Iron supplements & Growth monitoring for under-12 children.',
+    status: 'Upcoming',
+    enrolledPatientsCount: 95,
+    beneficiariesCount: 0,
+    contactPerson: 'Sujata Ganguly',
+    phone: '+91 98315 44332'
+  }
+];
+
+export const INITIAL_FAMILY_BRANCHES: FamilyBranch[] = [
+  {
+    id: 'fam-1',
+    orgId: 'org-1',
+    familyName: 'Subhash Chandra Bose Family Unit',
+    headOfFamily: 'Subhash Chandra Bose',
+    gotra: 'Kashyap',
+    ancestorFather: 'Late Haridas Chandra Bose',
+    ancestorMother: 'Late Prabhavati Devi',
+    spouse: 'Emilie Bose',
+    occupation: 'Senior Business Director',
+    childrenCount: 2,
+    lineageMembersCount: 4,
+    childrenNames: 'Anita Bose, Suraj Bose',
+    address: '15/2 Gariahat Road, Kolkata',
+    phone: '+91 98301 11223',
+    email: 'subhash.bose@example.org',
+    matrimonialProspectsCount: 1,
+    notes: 'Pioneer ancestral lineage settled in Ekdalia region since 1952. Registered Gotra Kashyap.'
+  },
+  {
+    id: 'fam-2',
+    orgId: 'org-1',
+    familyName: 'Anirban Mukherjee Family Unit',
+    headOfFamily: 'Anirban Mukherjee',
+    gotra: 'Bharadwaj',
+    ancestorFather: 'Late Haridas Mukherjee',
+    ancestorMother: 'Late Kamala Mukherjee',
+    spouse: 'Sujata Mukherjee',
+    occupation: 'Chartered Accountant',
+    childrenCount: 2,
+    lineageMembersCount: 3,
+    childrenNames: 'Ayan Mukherjee, Rishika Mukherjee',
+    address: '42B Southern Avenue, Kolkata',
+    phone: '+91 98302 33445',
+    email: 'anirban.ca@example.org',
+    matrimonialProspectsCount: 0,
+    notes: 'Executive Trustee member. Gotra Bharadwaj. Active in annual Durga Puja cultural sub-committee.'
+  },
+  {
+    id: 'fam-3',
+    orgId: 'org-1',
+    familyName: 'Debashis Roy Family Unit',
+    headOfFamily: 'Debashis Roy',
+    gotra: 'Vashistha',
+    ancestorFather: 'Late Haridas Roy',
+    ancestorMother: 'Late Sabitri Roy',
+    spouse: 'Runu Roy',
+    occupation: 'Senior Government Officer',
+    childrenCount: 1,
+    lineageMembersCount: 2,
+    childrenNames: 'Rahul Roy',
+    address: '88 Lake Road, Kolkata',
+    phone: '+91 98303 55667',
+    email: 'debashis.roy@example.org',
+    matrimonialProspectsCount: 1,
+    notes: 'Life Patron Member. Gotra Vashistha. Annual blood donor.'
+  },
+  {
+    id: 'fam-4',
+    orgId: 'org-1',
+    familyName: 'Dr. Sujata Sen Family Unit',
+    headOfFamily: 'Dr. Sujata Sen',
+    gotra: 'Sandilya',
+    ancestorFather: 'Late Haridas Sen',
+    ancestorMother: 'Late Malati Sen',
+    spouse: 'Dr. Bikram Sen',
+    occupation: 'Chief Medical Specialist',
+    childrenCount: 2,
+    lineageMembersCount: 5,
+    childrenNames: 'Priya Sen, Rohit Sen',
+    address: '12 Rashbehari Avenue, Kolkata',
+    phone: '+91 98304 77889',
+    email: 'sujata.sen@example.org',
+    matrimonialProspectsCount: 2,
+    notes: 'Lead Medical Advisor for community health camps. Gotra Sandilya.'
+  }
+];
+

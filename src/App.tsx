@@ -131,6 +131,26 @@ export default function App() {
     saveToFirestore('organizations', newOrg);
   };
 
+  const handleUpdateOrg = (updatedOrg: Organization) => {
+    setOrganizations(organizations.map(o => o.id === updatedOrg.id ? updatedOrg : o));
+    if (activeOrg.id === updatedOrg.id) {
+      setActiveOrg(updatedOrg);
+    }
+    saveToFirestore('organizations', updatedOrg);
+  };
+
+  const handleDeleteOrg = (orgId: string) => {
+    if (organizations.length <= 1) {
+      alert('Cannot delete the last remaining organization tenant.');
+      return;
+    }
+    const filtered = organizations.filter(o => o.id !== orgId);
+    setOrganizations(filtered);
+    if (activeOrg.id === orgId) {
+      setActiveOrg(filtered[0]);
+    }
+  };
+
   const handleAddMember = (newMem: Member) => {
     setMembers([newMem, ...members]);
     saveToFirestore('members', newMem);
@@ -257,6 +277,20 @@ export default function App() {
       console.error(err);
       alert('Document saved to vault.');
     }
+  };
+
+  const handleAddDoc = (newDoc: VaultDocument) => {
+    setVaultDocs([newDoc, ...vaultDocs]);
+    saveToFirestore('vaultDocs', newDoc);
+  };
+
+  const handleUpdateDoc = (updatedDoc: VaultDocument) => {
+    setVaultDocs(vaultDocs.map(d => d.id === updatedDoc.id ? updatedDoc : d));
+    saveToFirestore('vaultDocs', updatedDoc);
+  };
+
+  const handleDeleteDoc = (docId: string) => {
+    setVaultDocs(vaultDocs.filter(d => d.id !== docId));
   };
 
   // Backend API Call for AI RAG Chat
@@ -499,6 +533,9 @@ export default function App() {
               documents={tenantVaultDocs}
               activeOrg={activeOrg}
               onUploadExtractDoc={handleUploadExtractDoc}
+              onAddDoc={handleAddDoc}
+              onUpdateDoc={handleUpdateDoc}
+              onDeleteDoc={handleDeleteDoc}
             />
           )}
 
@@ -553,6 +590,8 @@ export default function App() {
               activeOrg={activeOrg}
               onSelectOrg={handleSelectOrg}
               onCreateOrg={handleCreateOrg}
+              onUpdateOrg={handleUpdateOrg}
+              onDeleteOrg={handleDeleteOrg}
               userCredentials={userCredentials}
               onAddCredential={handleAddCredential}
               onUpdateCredential={handleUpdateCredential}

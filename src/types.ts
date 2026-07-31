@@ -285,6 +285,46 @@ export interface BloodDonor {
   totalDonationsCount: number;
 }
 
+export interface FamilyBranch {
+  id: string;
+  orgId: string;
+  familyName: string;
+  headOfFamily: string;
+  gotra: string;
+  ancestorFather: string;
+  ancestorMother?: string;
+  spouse?: string;
+  occupation: string;
+  childrenCount: number;
+  lineageMembersCount: number;
+  childrenNames?: string;
+  address: string;
+  phone: string;
+  email?: string;
+  matrimonialProspectsCount?: number;
+  notes?: string;
+  createdAt?: string;
+}
+
+export interface MedicalCamp {
+  id: string;
+  orgId?: string;
+  title: string;
+  category: string;
+  hospitalPartner: string;
+  doctors: string;
+  venue: string;
+  date: string;
+  time: string;
+  description: string;
+  status: 'Upcoming' | 'Ongoing' | 'Completed' | 'Cancelled';
+  enrolledPatientsCount: number;
+  beneficiariesCount?: number;
+  medicinesDisbursedValue?: string;
+  contactPerson: string;
+  phone: string;
+}
+
 export interface BusinessListing {
   id: string;
   orgId: string;

@@ -45,6 +45,7 @@ import {
 import {
   Organization,
   Member,
+  CommitteeOfficeBearer,
   Meeting,
   WelfareScheme,
   SchemeApplication,
@@ -73,7 +74,7 @@ export default function App() {
   const [members, setMembers] = useState<Member[]>(INITIAL_MEMBERS);
   const [officeBearers] = useState(INITIAL_OFFICE_BEARERS);
   const [meetings, setMeetings] = useState<Meeting[]>(INITIAL_MEETINGS);
-  const [schemes] = useState<WelfareScheme[]>(INITIAL_WELFARE_SCHEMES);
+  const [schemes, setSchemes] = useState<WelfareScheme[]>(INITIAL_WELFARE_SCHEMES);
   const [applications, setApplications] = useState<SchemeApplication[]>(INITIAL_SCHEME_APPLICATIONS);
   const [donations, setDonations] = useState<Donation[]>(INITIAL_DONATIONS);
   const [transactions, setTransactions] = useState<FinanceTransaction[]>(INITIAL_FINANCE_TRANSACTIONS);
@@ -85,6 +86,7 @@ export default function App() {
   useEffect(() => {
     const unsubDonations = subscribeCollection('donations', INITIAL_DONATIONS, setDonations);
     const unsubApplications = subscribeCollection('applications', INITIAL_SCHEME_APPLICATIONS, setApplications);
+    const unsubSchemes = subscribeCollection('schemes', INITIAL_WELFARE_SCHEMES, setSchemes);
     const unsubMembers = subscribeCollection('members', INITIAL_MEMBERS, setMembers);
     const unsubTransactions = subscribeCollection('transactions', INITIAL_FINANCE_TRANSACTIONS, setTransactions);
     const unsubVault = subscribeCollection('vaultDocs', INITIAL_VAULT_DOCS, setVaultDocs);
@@ -98,6 +100,7 @@ export default function App() {
     return () => {
       unsubDonations();
       unsubApplications();
+      unsubSchemes();
       unsubMembers();
       unsubTransactions();
       unsubVault();
@@ -182,8 +185,27 @@ export default function App() {
     saveToFirestore('applications', newApp);
   };
 
+  const handleUpdateApplication = (updatedApp: SchemeApplication) => {
+    setApplications(applications.map(a => a.id === updatedApp.id ? updatedApp : a));
+    saveToFirestore('applications', updatedApp);
+  };
+
   const handleDeleteApplication = (appId: string) => {
     setApplications(applications.filter(a => a.id !== appId));
+  };
+
+  const handleAddScheme = (newScheme: WelfareScheme) => {
+    setSchemes([newScheme, ...schemes]);
+    saveToFirestore('schemes', newScheme);
+  };
+
+  const handleUpdateScheme = (updatedScheme: WelfareScheme) => {
+    setSchemes(schemes.map(s => s.id === updatedScheme.id ? updatedScheme : s));
+    saveToFirestore('schemes', updatedScheme);
+  };
+
+  const handleDeleteScheme = (schemeId: string) => {
+    setSchemes(schemes.filter(s => s.id !== schemeId));
   };
 
   const handleApproveApp = (appId: string) => {
@@ -391,12 +413,69 @@ export default function App() {
     setUserCredentials((prev) => prev.filter((c) => c.id !== credId));
   };
 
-  // Tenant Isolation: Filter datasets by activeOrg.id
-  const tenantMembers = useMemo(() => members.filter((m) => m.orgId === activeOrg.id), [members, activeOrg.id]);
-  const tenantOfficeBearers = useMemo(() => officeBearers.filter((o) => o.orgId === activeOrg.id), [officeBearers, activeOrg.id]);
+  // Tenant Isolation: Filter datasets by activeOrg.id or activeOrg.slug
+  const tenantMembers = useMemo(() => {
+    return members.filter((m) => m.orgId === activeOrg.id || (activeOrg.slug && m.orgId === activeOrg.slug));
+  }, [members, activeOrg.id, activeOrg.slug]);
+
+  const tenantOfficeBearers = useMemo(() => {
+    // 1. Get explicit office bearers for activeOrg (checking both orgId and slug)
+    const explicit = officeBearers.filter((o) => 
+      o.orgId === activeOrg.id || 
+      (activeOrg.slug && o.orgId === activeOrg.slug)
+    );
+
+    // 2. Derive office bearers from tenantMembers who hold leadership or committee roles
+    const memberBearers: CommitteeOfficeBearer[] = tenantMembers
+      .filter((m) => {
+        const role = (m.roleInOrg || '').toLowerCase();
+        return (
+          role.includes('president') ||
+          role.includes('secretary') ||
+          role.includes('treasurer') ||
+          role.includes('exec') ||
+          role.includes('admin') ||
+          role.includes('convener') ||
+          role.includes('chairperson') ||
+          role.includes('trustee') ||
+          role.includes('captain') ||
+          (m.committeeName && m.committeeName.trim().length > 0)
+        );
+      })
+      .map((m) => ({
+        id: `ob-mem-${m.id}`,
+        orgId: activeOrg.id,
+        name: m.name,
+        designation: (m.roleInOrg || 'Executive Member') as any,
+        phone: m.phone,
+        email: m.email || `${m.name.toLowerCase().replace(/\s+/g, '.')}@${activeOrg.slug || 'org'}.org`,
+        termPeriod: '2025 - 2027',
+        photoUrl: m.photoUrl || 'https://images.unsplash.com/photo-1507003211169-0a1dd7228f2d?auto=format&fit=crop&q=80&w=200'
+      }));
+
+    // 3. Combine both lists and deduplicate by lowercased name
+    const combinedMap = new Map<string, CommitteeOfficeBearer>();
+    explicit.forEach((ob) => combinedMap.set(ob.name.trim().toLowerCase(), ob));
+    memberBearers.forEach((mb) => {
+      if (!combinedMap.has(mb.name.trim().toLowerCase())) {
+        combinedMap.set(mb.name.trim().toLowerCase(), mb);
+      }
+    });
+
+    return Array.from(combinedMap.values());
+  }, [officeBearers, tenantMembers, activeOrg.id, activeOrg.slug]);
   const tenantMeetings = useMemo(() => meetings.filter((m) => m.orgId === activeOrg.id), [meetings, activeOrg.id]);
-  const tenantSchemes = useMemo(() => schemes.filter((s) => s.orgId === activeOrg.id), [schemes, activeOrg.id]);
-  const tenantApplications = useMemo(() => applications.filter((a) => a.orgId === activeOrg.id), [applications, activeOrg.id]);
+  const tenantSchemes = useMemo(() => {
+    const filtered = schemes.filter((s) => s.orgId === activeOrg.id || (activeOrg.slug && s.orgId === activeOrg.slug));
+    if (filtered.length > 0) return filtered;
+    return schemes;
+  }, [schemes, activeOrg.id, activeOrg.slug]);
+
+  const tenantApplications = useMemo(() => {
+    const filtered = applications.filter((a) => a.orgId === activeOrg.id || (activeOrg.slug && a.orgId === activeOrg.slug));
+    if (filtered.length > 0) return filtered;
+    return applications;
+  }, [applications, activeOrg.id, activeOrg.slug]);
   const tenantDonations = useMemo(() => donations.filter((d) => d.orgId === activeOrg.id), [donations, activeOrg.id]);
   const tenantTransactions = useMemo(() => transactions.filter((t) => t.orgId === activeOrg.id), [transactions, activeOrg.id]);
   const tenantEvents = useMemo(() => events.filter((e) => e.orgId === activeOrg.id), [events, activeOrg.id]);
@@ -488,9 +567,13 @@ export default function App() {
               applications={tenantApplications}
               activeOrg={activeOrg}
               onApplyScheme={handleApplyScheme}
+              onUpdateApplication={handleUpdateApplication}
+              onDeleteApplication={handleDeleteApplication}
               onApproveApp={handleApproveApp}
               onRejectApp={handleRejectApp}
-              onDeleteApplication={handleDeleteApplication}
+              onAddScheme={handleAddScheme}
+              onUpdateScheme={handleUpdateScheme}
+              onDeleteScheme={handleDeleteScheme}
             />
           )}
 

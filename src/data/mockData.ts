@@ -525,6 +525,28 @@ export const INITIAL_MEMBERS: Member[] = [
     annualFeePaid: true,
     emergencyContact: { name: 'Kiran Jaiswal', phone: '+91 98311 99001', relation: 'Spouse' },
     qrCodeData: 'CB-MEMBER-502-ACTIVE'
+  },
+  {
+    id: 'mem-503',
+    membershipNo: 'CH-2026-120',
+    orgId: 'org-5',
+    name: 'Arun Kumar Jaiswal',
+    photoUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200',
+    roleInOrg: 'Executive Member',
+    committeeName: 'Executive Committee',
+    bloodGroup: 'O+',
+    occupation: 'Digital Marketing Professional',
+    businessName: 'Deinrim Solutions (P) Ltd.',
+    phone: '9836130393',
+    email: 'arun.jaiswal@deinrim.com',
+    address: 'Manicktala Street, Kolkata - 700006',
+    familyMembersCount: 4,
+    status: 'Active',
+    joinDate: '2022-04-10',
+    renewalDueDate: '2027-03-31',
+    annualFeePaid: true,
+    emergencyContact: { name: 'Pooja Jaiswal', phone: '9836130394', relation: 'Spouse' },
+    qrCodeData: 'CB-MEMBER-503-ACTIVE'
   }
 ];
 

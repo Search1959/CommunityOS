@@ -161,20 +161,26 @@ export const OrgProfileModule: React.FC<OrgProfileModuleProps> = ({
               <span className="text-xs text-slate-400 font-semibold">Term: 2025 - 2027</span>
             </div>
 
-            <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-              {officeBearers.map((ob) => (
-                <div key={ob.id} className="p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center gap-3">
-                  <img src={ob.photoUrl} alt={ob.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
-                  <div className="space-y-0.5 truncate">
-                    <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">
-                      {ob.designation}
-                    </span>
-                    <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">{ob.name}</h4>
-                    <p className="text-[10px] text-slate-500">{ob.phone}</p>
+            {officeBearers.length === 0 ? (
+              <div className="p-6 rounded-xl bg-slate-50 dark:bg-slate-800/50 text-center text-slate-500 text-xs">
+                No office bearers recorded yet. Enrol executive members in the Membership Directory.
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                {officeBearers.map((ob) => (
+                  <div key={ob.id} className="p-3.5 rounded-xl border border-slate-100 dark:border-slate-800 bg-slate-50/50 dark:bg-slate-800/40 flex items-center gap-3">
+                    <img src={ob.photoUrl} alt={ob.name} className="w-12 h-12 rounded-xl object-cover shrink-0" />
+                    <div className="space-y-0.5 truncate">
+                      <span className="px-2 py-0.5 rounded text-[9px] font-bold uppercase tracking-wider bg-rose-100 text-rose-800 dark:bg-rose-950 dark:text-rose-300">
+                        {ob.designation}
+                      </span>
+                      <h4 className="text-xs font-bold text-slate-900 dark:text-white truncate">{ob.name}</h4>
+                      <p className="text-[10px] text-slate-500">{ob.phone}</p>
+                    </div>
                   </div>
-                </div>
-              ))}
-            </div>
+                ))}
+              </div>
+            )}
           </div>
 
         </div>
@@ -203,9 +209,51 @@ export const OrgProfileModule: React.FC<OrgProfileModuleProps> = ({
 
             <div className="pt-4 border-t border-slate-100 dark:border-slate-800">
               <p className="text-[11px] font-bold text-slate-400 mb-2">QR Code for Membership & Public Verification</p>
-              <div className="p-3 bg-white rounded-xl border flex items-center justify-center">
-                <div className="w-32 h-32 bg-slate-900 flex items-center justify-center text-white text-[10px] font-mono p-2 text-center rounded">
-                  [QR: {activeOrg.slug.toUpperCase()}-SEAL-2026]
+              <div className="p-4 bg-slate-950 rounded-2xl border border-slate-800 flex flex-col items-center justify-center text-center space-y-2 shadow-inner">
+                <div className="w-32 h-32 bg-white p-2 rounded-xl shadow-md flex flex-col items-center justify-center relative overflow-hidden">
+                  {/* Decorative High-Res Vector QR Code representation */}
+                  <svg viewBox="0 0 100 100" className="w-full h-full text-slate-900 fill-current">
+                    {/* Finder Patterns */}
+                    <rect x="5" y="5" width="30" height="30" rx="4" />
+                    <rect x="10" y="10" width="20" height="20" fill="white" rx="2" />
+                    <rect x="15" y="15" width="10" height="10" rx="1" />
+
+                    <rect x="65" y="5" width="30" height="30" rx="4" />
+                    <rect x="70" y="10" width="20" height="20" fill="white" rx="2" />
+                    <rect x="75" y="15" width="10" height="10" rx="1" />
+
+                    <rect x="5" y="65" width="30" height="30" rx="4" />
+                    <rect x="10" y="70" width="20" height="20" fill="white" rx="2" />
+                    <rect x="15" y="75" width="10" height="10" rx="1" />
+
+                    {/* QR Data Matrix Pixels */}
+                    <rect x="42" y="8" width="6" height="6" />
+                    <rect x="52" y="8" width="6" height="6" />
+                    <rect x="42" y="18" width="6" height="6" />
+                    <rect x="52" y="28" width="6" height="6" />
+                    <rect x="8" y="42" width="6" height="6" />
+                    <rect x="18" y="50" width="6" height="6" />
+                    <rect x="28" y="42" width="6" height="6" />
+                    <rect x="42" y="42" width="16" height="16" className="text-rose-600" />
+                    <rect x="65" y="42" width="6" height="6" />
+                    <rect x="75" y="50" width="6" height="6" />
+                    <rect x="85" y="42" width="6" height="6" />
+                    <rect x="42" y="65" width="6" height="6" />
+                    <rect x="52" y="75" width="6" height="6" />
+                    <rect x="65" y="65" width="6" height="6" />
+                    <rect x="75" y="75" width="6" height="6" />
+                    <rect x="85" y="65" width="6" height="6" />
+                    <rect x="65" y="85" width="16" height="10" />
+                    <rect x="42" y="85" width="6" height="10" />
+                  </svg>
+                </div>
+                <div className="space-y-0.5">
+                  <p className="text-[10px] font-extrabold uppercase tracking-widest text-emerald-400 flex items-center justify-center gap-1">
+                    <ShieldCheck className="w-3 h-3" /> VERIFIED OFFICIAL SEAL
+                  </p>
+                  <p className="text-[9px] font-mono text-slate-400">
+                    {activeOrg.slug ? activeOrg.slug.toUpperCase() : 'DEINRIM'}-SEAL-2026
+                  </p>
                 </div>
               </div>
             </div>

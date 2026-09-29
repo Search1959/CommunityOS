@@ -1,3 +1,16 @@
+export interface AuditReport {
+  id: string;
+  orgId?: string;
+  name: string;
+  type: 'PDF' | 'Excel' | 'Word' | 'CSV';
+  size: string;
+  category: string;
+  uploadDate: string;
+  description?: string;
+  fileUrl?: string;
+  fileContent?: string;
+}
+
 export type OrgType = 
   | 'Puja Committee' 
   | 'Samaj / Community Association' 
@@ -180,6 +193,13 @@ export interface FinanceTransaction {
   description: string;
   projectName?: string;
   receiptAttachment?: string;
+  vendorName?: string;
+  vendorGst?: string;
+  invoiceNo?: string;
+  status?: 'Approved' | 'Pending' | 'Paid' | 'Reimbursed';
+  tdsDeducted?: number;
+  taxExempt?: boolean;
+  budgetAllocated?: number;
 }
 
 export interface EventItem {

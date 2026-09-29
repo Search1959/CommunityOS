@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useRef } from 'react';
 import { 
   Building2, 
   FileText, 
@@ -11,41 +11,97 @@ import {
   Users, 
   CheckCircle, 
   ExternalLink,
-  BookOpen
+  BookOpen,
+  Palette,
+  Camera,
+  Upload
 } from 'lucide-react';
 import { Organization, CommitteeOfficeBearer } from '../types';
 
 interface OrgProfileModuleProps {
   activeOrg: Organization;
   officeBearers: CommitteeOfficeBearer[];
+  onOpenThemeModal?: () => void;
+  onUpdateOrg?: (updatedOrg: Organization) => void;
 }
 
 export const OrgProfileModule: React.FC<OrgProfileModuleProps> = ({
   activeOrg,
   officeBearers,
+  onOpenThemeModal,
+  onUpdateOrg,
 }) => {
+  const fileInputRef = useRef<HTMLInputElement>(null);
+
+  const displayBanner = 
+    activeOrg.bannerUrl?.includes('photo-1541872703-74c5e44368f9') || 
+    (activeOrg.name?.toLowerCase().includes('arya samaj') && activeOrg.bannerUrl?.includes('unsplash'))
+      ? '/aryasamaj_banner.svg'
+      : (activeOrg.bannerUrl || '/aryasamaj_banner.svg');
+
+  const handleBannerUpload = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+    const reader = new FileReader();
+    reader.onload = (event) => {
+      const base64 = event.target?.result as string;
+      if (base64 && onUpdateOrg) {
+        onUpdateOrg({
+          ...activeOrg,
+          bannerUrl: base64,
+        });
+      }
+    };
+    reader.readAsDataURL(file);
+  };
+
   return (
     <div className="space-y-6">
       
       {/* Banner & Header */}
       <div className="relative rounded-3xl overflow-hidden border border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 shadow-sm">
         {/* Top Banner Area */}
-        <div className="h-44 sm:h-52 w-full relative bg-slate-900 overflow-hidden">
+        <div className="h-48 sm:h-64 w-full relative bg-slate-900 overflow-hidden group">
           <img 
-            src={activeOrg.bannerUrl} 
-            alt="" 
-            className="w-full h-full object-cover opacity-75"
+            src={displayBanner} 
+            alt={activeOrg.name} 
+            referrerPolicy="no-referrer"
+            className="w-full h-full object-cover object-center transition-all duration-300 group-hover:scale-101"
           />
-          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/80 via-slate-950/20 to-transparent" />
+          <div className="absolute inset-0 bg-gradient-to-t from-slate-950/85 via-slate-950/20 to-transparent" />
           
           {/* Top badges floating over banner */}
           <div className="absolute top-4 left-4 right-4 flex items-center justify-between z-10">
             <span className="px-3 py-1 rounded-full text-[11px] font-extrabold uppercase tracking-wider bg-rose-600 text-white shadow-md">
               {activeOrg.type}
             </span>
-            <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-slate-950/80 text-slate-200 border border-white/10 backdrop-blur-sm">
-              Reg: {activeOrg.regNo}
-            </span>
+            <div className="flex items-center gap-2">
+              <span className="px-2.5 py-1 rounded-lg text-xs font-mono font-bold bg-slate-950/80 text-slate-200 border border-white/10 backdrop-blur-sm">
+                Reg: {activeOrg.regNo}
+              </span>
+              
+              {/* Direct Banner Upload / Change Button */}
+              {onUpdateOrg && (
+                <>
+                  <button
+                    type="button"
+                    onClick={() => fileInputRef.current?.click()}
+                    className="px-2.5 py-1 rounded-lg text-xs font-semibold bg-slate-950/80 hover:bg-black text-white border border-white/20 backdrop-blur-sm shadow-md flex items-center gap-1.5 transition-all cursor-pointer"
+                    title="Upload or Change Banner Photo"
+                  >
+                    <Camera className="w-3.5 h-3.5 text-amber-300" />
+                    <span className="hidden sm:inline">Change Photo</span>
+                  </button>
+                  <input
+                    ref={fileInputRef}
+                    type="file"
+                    accept="image/*"
+                    className="hidden"
+                    onChange={handleBannerUpload}
+                  />
+                </>
+              )}
+            </div>
           </div>
         </div>
 
@@ -70,15 +126,28 @@ export const OrgProfileModule: React.FC<OrgProfileModuleProps> = ({
             </div>
           </div>
 
-          <a
-            href={`https://${activeOrg.websiteDomain}`}
-            target="_blank"
-            rel="noreferrer"
-            className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black dark:bg-white dark:hover:bg-slate-100 text-white dark:text-slate-900 font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md shrink-0"
-          >
-            <span>Visit Public Website</span>
-            <ExternalLink className="w-3.5 h-3.5" />
-          </a>
+          <div className="flex flex-wrap items-center gap-2.5 shrink-0">
+            {onOpenThemeModal && (
+              <button
+                type="button"
+                onClick={onOpenThemeModal}
+                className="px-4 py-2.5 rounded-xl text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md cursor-pointer hover:opacity-95"
+                style={{ backgroundColor: activeOrg.themeColor || '#dc2626' }}
+              >
+                <Palette className="w-3.5 h-3.5" />
+                <span>Customize Community Theme</span>
+              </button>
+            )}
+            <a
+              href={`https://${activeOrg.websiteDomain}`}
+              target="_blank"
+              rel="noreferrer"
+              className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-black dark:bg-slate-800 dark:hover:bg-slate-700 text-white font-bold text-xs flex items-center justify-center gap-2 transition-all shadow-md"
+            >
+              <span>Visit Public Website</span>
+              <ExternalLink className="w-3.5 h-3.5" />
+            </a>
+          </div>
         </div>
       </div>
 

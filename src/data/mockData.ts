@@ -19,7 +19,8 @@ import {
   WhatsAppAlertLog,
   UserCredential,
   MedicalCamp,
-  FamilyBranch
+  FamilyBranch,
+  AuditReport
 } from '../types';
 
 export const INITIAL_ORGANIZATIONS: Organization[] = [
@@ -50,27 +51,27 @@ export const INITIAL_ORGANIZATIONS: Organization[] = [
   },
   {
     id: 'org-2',
-    slug: 'jaiswalsamaj',
-    name: 'All India Jaiswal Sarvavargiya Mahasabha',
+    slug: 'aryasamaj-kolkata',
+    name: 'Arya Samaj Mandir Kolkata',
     type: 'Samaj / Community Association',
-    tagline: 'Uniting Families, Empowering Youth, Preserving Culture & Supporting Business',
+    tagline: 'Vedic Values, Social Welfare, Yajna Sacraments & Community Harmony | Official Enterprise OS for Arya Samaj Kolkata',
     regNo: 'S/REG/48192/1974',
     pan: 'AAAAT9812A',
     gst: '07AAAAT9812A1Z3',
-    eightyG: 'DEL/80G/2020-21/J-102',
+    eightyG: 'KOL/80G/2021-22/A-201',
     twelveA: 'AAAAT9812A12AA',
-    address: 'Jaiswal Bhawan, Central Avenue, New Delhi - 110001',
-    phone: '+91 98111 88822',
-    email: 'info@jaiswalsamaj.org',
-    websiteDomain: 'jaiswalsamaj.communityos.in',
-    mission: 'To uplift community families through higher education scholarships, matrimonial networking, emergency healthcare funds, and business mentorship.',
-    history: 'Founded in 1974, representing over 50,000 Jaiswal families across North & Eastern India with regional chapters in Delhi, Kolkata, Kanpur, Patna, and Varanasi.',
-    constitutionSummary: 'All decision-making managed through an elected Central Board. Holds annual AGM in December and quarterly regional delegate conferences.',
+    address: '19, Arya Samaj Road, Barabazar / Central Avenue, Kolkata - 700007',
+    phone: '+91 33 2268 4421',
+    email: 'contact@aryasamajkolkata.org',
+    websiteDomain: 'aryasamajkolkata.communityos.in',
+    mission: 'To propagate Vedic values, conduct sacramental Yajnas and Vivah Sanskar, provide free healthcare and Annakshetra, and empower youth through Vedic scholarship.',
+    history: 'Serving Kolkata and Eastern India for over 50 years, dedicated to truth, social reform, universal brotherhood, and philanthropic welfare founded on the teachings of Swami Dayanand Saraswati.',
+    constitutionSummary: 'Managed by an elected Executive Council under the Arya Pratinidhi Sabha constitution, with annual audited financial statements and democratic elections.',
     membersCount: 3850,
     totalDonationsYTD: 8950000,
     activeSchemesCount: 6,
-    themeColor: '#d97706', // Amber
-    bannerUrl: 'https://images.unsplash.com/photo-1541872703-74c5e44368f9?auto=format&fit=crop&q=80&w=1200',
+    themeColor: '#ea580c', // Saffron / Kesari
+    bannerUrl: '/aryasamaj_banner.svg',
     logoUrl: 'https://images.unsplash.com/photo-1582555172866-f73bb12a2ab3?auto=format&fit=crop&q=80&w=200'
   },
   {
@@ -868,7 +869,14 @@ export const INITIAL_FINANCE_TRANSACTIONS: FinanceTransaction[] = [
     date: '2026-07-20',
     description: 'Advance payment (40%) to Midnapore Decorators for Bamboo & Timber structure.',
     projectName: 'Durga Puja 2026',
-    receiptAttachment: 'Midnapore_Decorators_Bill.pdf'
+    receiptAttachment: 'Midnapore_Decorators_Bill.pdf',
+    vendorName: 'Midnapore Traditional Decorators LLP',
+    vendorGst: '19AAECM4421P1Z9',
+    invoiceNo: 'INV/2026/089',
+    status: 'Paid',
+    tdsDeducted: 5700,
+    taxExempt: false,
+    budgetAllocated: 750000,
   },
   {
     id: 'fin-102',
@@ -882,7 +890,11 @@ export const INITIAL_FINANCE_TRANSACTIONS: FinanceTransaction[] = [
     approvedBy: 'Anirban Mukherjee (Secretary)',
     date: '2026-06-10',
     description: 'Medical surgery grant disbursed to Aparna Biswas (App ID: app-902).',
-    projectName: 'Sanjivani Medical Scheme'
+    projectName: 'Sanjivani Medical Scheme',
+    vendorName: 'B.M. Birla Heart Research Centre',
+    status: 'Paid',
+    taxExempt: true,
+    budgetAllocated: 300000,
   },
   {
     id: 'fin-103',
@@ -892,11 +904,12 @@ export const INITIAL_FINANCE_TRANSACTIONS: FinanceTransaction[] = [
     category: 'Donation Received',
     ledgerAccount: 'Corpus Donation 80G',
     amount: 500000,
-    paymentMethod: 'NEFT',
+    paymentMethod: 'Bank Transfer (NEFT)',
     approvedBy: 'Subhash Chandra Bose (President)',
     date: '2026-07-25',
     description: 'CSR Donation received from Sanjiv Goenka Enterprises.',
-    projectName: 'Durga Puja 2026'
+    projectName: 'Durga Puja 2026',
+    status: 'Paid',
   },
   {
     id: 'fin-104',
@@ -909,7 +922,148 @@ export const INITIAL_FINANCE_TRANSACTIONS: FinanceTransaction[] = [
     paymentMethod: 'UPI / Cash',
     approvedBy: 'Debashis Roy (Treasurer)',
     date: '2026-04-15',
-    description: 'Annual membership renewal collections Q1 2026.'
+    description: 'Annual membership renewal collections Q1 2026.',
+    status: 'Paid',
+  },
+  {
+    id: 'fin-105',
+    voucherNo: 'VOU-2026-0186',
+    orgId: 'org-1',
+    type: 'Expense',
+    category: 'Cultural & Festival Expense',
+    ledgerAccount: 'Illumination & Chandannagar Lights',
+    amount: 175000,
+    paymentMethod: 'Bank Transfer (NEFT)',
+    approvedBy: 'Debashis Roy (Treasurer)',
+    date: '2026-08-05',
+    description: 'Booking token for LED 3D light gates from Chandannagar Electricians.',
+    projectName: 'Durga Puja 2026',
+    vendorName: 'Babu Light & Sound Chandannagar',
+    vendorGst: '19AAKFB1092M1ZX',
+    invoiceNo: 'BLS/WB/2026/411',
+    status: 'Paid',
+    tdsDeducted: 3500,
+    budgetAllocated: 450000,
+  },
+  {
+    id: 'fin-106',
+    voucherNo: 'VOU-2026-0187',
+    orgId: 'org-1',
+    type: 'Expense',
+    category: 'Cultural & Festival Expense',
+    ledgerAccount: 'Pratima Murti Sculpting & Clay Art',
+    amount: 120000,
+    paymentMethod: 'Cheque',
+    approvedBy: 'Somnath Banerjee (Incharge)',
+    date: '2026-06-25',
+    description: 'Second installment to Kumartuli Shilpi Sanatan Rudra Pal for traditional Durga Idol.',
+    projectName: 'Durga Puja 2026',
+    vendorName: 'Sanatan Rudra Pal Studios, Kumartuli',
+    invoiceNo: 'SRP-ART-2026-12',
+    status: 'Paid',
+    budgetAllocated: 250000,
+  },
+  {
+    id: 'fin-107',
+    voucherNo: 'VOU-2026-0188',
+    orgId: 'org-1',
+    type: 'Expense',
+    category: 'Civic & Utilities',
+    ledgerAccount: 'CESC Temporary Electricity Connection',
+    amount: 85000,
+    paymentMethod: 'Online Portal',
+    approvedBy: 'Debashis Roy (Treasurer)',
+    date: '2026-08-12',
+    description: 'Statutory temporary festive load security deposit to CESC Ltd.',
+    projectName: 'Durga Puja 2026',
+    vendorName: 'CESC Limited Kolkata',
+    vendorGst: '19AAACC0123P1ZF',
+    invoiceNo: 'CESC/FEST/2026/8991',
+    status: 'Approved',
+    budgetAllocated: 180000,
+  },
+  {
+    id: 'fin-108',
+    voucherNo: 'VOU-2026-0189',
+    orgId: 'org-1',
+    type: 'Expense',
+    category: 'Welfare Disbursement',
+    ledgerAccount: 'Swami Vivekananda Education Stipend',
+    amount: 45000,
+    paymentMethod: 'Bank Transfer (NEFT)',
+    approvedBy: 'Anirban Mukherjee (Secretary)',
+    date: '2026-07-15',
+    description: 'Direct stipend transfer to 9 underprivileged college students (₹5,000 each).',
+    projectName: 'Education Welfare Cell',
+    status: 'Paid',
+    taxExempt: true,
+    budgetAllocated: 120000,
+  },
+  {
+    id: 'fin-109',
+    voucherNo: 'VOU-2026-0190',
+    orgId: 'org-1',
+    type: 'Expense',
+    category: 'Safety & Security',
+    ledgerAccount: 'CCTV Surveillance & Fire Extinguishers',
+    amount: 52000,
+    paymentMethod: 'UPI',
+    approvedBy: 'Debashis Roy (Treasurer)',
+    date: '2026-08-18',
+    description: '32-channel IP HD CCTV installation with 15-day NVR backup and fire safety refilling.',
+    projectName: 'Durga Puja 2026',
+    vendorName: 'HawkEye Security Systems Kolkata',
+    vendorGst: '19AAGCH9912K1Z4',
+    invoiceNo: 'HES/2026/092',
+    status: 'Approved',
+    budgetAllocated: 80000,
+  },
+  {
+    id: 'fin-110',
+    voucherNo: 'VOU-2026-0191',
+    orgId: 'org-1',
+    type: 'Income',
+    category: 'Souvenir & Sponsorship',
+    ledgerAccount: 'Corporate Stall & Banner Sponsorship',
+    amount: 350000,
+    paymentMethod: 'Bank Transfer (NEFT)',
+    approvedBy: 'Subhash Chandra Bose (President)',
+    date: '2026-08-01',
+    description: 'Title sponsorship stall rights (Stall No. 1 & 2) paid by Tata Tea Gold.',
+    projectName: 'Durga Puja 2026',
+    status: 'Paid',
+  },
+  {
+    id: 'fin-111',
+    voucherNo: 'VOU-2026-0192',
+    orgId: 'org-1',
+    type: 'Income',
+    category: 'Bank Interest',
+    ledgerAccount: 'Fixed Deposit Quarterly Accrual',
+    amount: 38400,
+    paymentMethod: 'Auto Credit',
+    approvedBy: 'Debashis Roy (Treasurer)',
+    date: '2026-06-30',
+    description: 'Quarterly interest credited by State Bank of India (Gariahat Branch) on Reserve FD.',
+    status: 'Paid',
+  },
+  {
+    id: 'fin-112',
+    voucherNo: 'VOU-2026-0193',
+    orgId: 'org-1',
+    type: 'Expense',
+    category: 'Administrative & Printing',
+    ledgerAccount: 'Auditor & Legal Filing Fees',
+    amount: 25000,
+    paymentMethod: 'Cheque',
+    approvedBy: 'Anirban Mukherjee (Secretary)',
+    date: '2026-05-20',
+    description: 'Professional retainership fee to M/s Mukherjee & Associates for 10B/10BD IT returns.',
+    vendorName: 'Mukherjee & Associates Chartered Accountants',
+    invoiceNo: 'MA-CA/2026/41',
+    status: 'Paid',
+    tdsDeducted: 2500,
+    budgetAllocated: 35000,
   }
 ];
 
@@ -1699,6 +1853,81 @@ export const INITIAL_FAMILY_BRANCHES: FamilyBranch[] = [
     email: 'sujata.sen@example.org',
     matrimonialProspectsCount: 2,
     notes: 'Lead Medical Advisor for community health camps. Gotra Sandilya.'
+  }
+];
+
+export const INITIAL_AUDIT_REPORTS: AuditReport[] = [
+  {
+    id: 'report-1',
+    orgId: 'org-1',
+    name: 'Annual Statutory Audit Report FY 2025-26',
+    type: 'PDF',
+    size: '2.4 MB',
+    category: 'Statutory Financial Audit',
+    uploadDate: '2026-03-31',
+    description: 'Certified financial balance sheet, profit & loss statement, and auditor notes audited by chartered accountants.',
+    fileContent: `STATUTORY AUDIT REPORT FY 2025-26
+Organization: Ekdalia Evergreen Durga Puja Committee
+Reg No: S/1L/28941/1933 | PAN: AAATE4821K
+Auditor: Sen & Mookherjee Chartered Accountants (FRN: 302198E)
+Opinion: Unqualified Clean Audit Opinion.
+Total Income: ₹42,80,000 | Total Expenditure: ₹36,10,000 | Surplus: ₹6,70,000`
+  },
+  {
+    id: 'report-2',
+    orgId: 'org-1',
+    name: 'Complete Member Register with Blood Group & Address',
+    type: 'Excel',
+    size: '1.1 MB',
+    category: 'Membership Master Directory',
+    uploadDate: '2026-04-15',
+    description: 'Master list of active members containing membership numbers, emergency contacts, blood groups, and verified local addresses.',
+    fileContent: `Member No, Full Name, Phone, Blood Group, Role, Status
+MEM-1001, Sujay Chakraborty, +91 98300 11223, O+, President, Active
+MEM-1002, Debashis Roy, +91 98311 22334, B+, General Secretary, Active
+MEM-1003, Dr. Sujata Sen, +91 98304 77889, A+, Medical Advisor, Active`
+  },
+  {
+    id: 'report-3',
+    orgId: 'org-1',
+    name: '80G Tax Donation Certificate Master Ledger',
+    type: 'PDF',
+    size: '3.8 MB',
+    category: 'Tax & Compliance',
+    uploadDate: '2026-05-10',
+    description: 'Comprehensive 80G tax exemption donation certificates and serial ledger submitted to Income Tax Department.',
+    fileContent: `80G TAX DONATION MASTER LEDGER FY 2025-26
+Order No: CIT-KOL/80G/2021-22/A-481
+Total 80G Eligible Receipts: 142
+Total Exempt Amount: ₹18,50,000
+Verified by Income Tax Officer Ward 1(1) Kolkata.`
+  },
+  {
+    id: 'report-4',
+    orgId: 'org-1',
+    name: 'Executive Meeting Resolutions & Voting Register',
+    type: 'PDF',
+    size: '1.9 MB',
+    category: 'Governance & Minutes',
+    uploadDate: '2026-06-01',
+    description: 'Official minutes, voting outcomes, and signed executive resolutions passed during General Body & Committee meetings.',
+    fileContent: `EXECUTIVE MEETING RESOLUTIONS
+Meeting Date: May 15, 2026
+Resolution #1: Unanimously approved welfare fund allocation of ₹10,00,000 for Higher Education Scholarships.
+Resolution #2: Approved annual medical camp dates.`
+  },
+  {
+    id: 'report-5',
+    orgId: 'org-1',
+    name: 'Welfare Scheme Disbursal Audit Trail',
+    type: 'Excel',
+    size: '850 KB',
+    category: 'Welfare Disbursal Audit',
+    uploadDate: '2026-07-01',
+    description: 'Itemized verification logs and bank transfer transaction details for all education scholarships and medical grants disbursed.',
+    fileContent: `Application ID, Applicant Name, Scheme Name, Disbursed Amount, Date, Bank Ref
+APP-8801, Riya Banerjee, Higher Education Scholarship, ₹25000, 2026-06-12, NEFT892102
+APP-8802, Somnath Roy, Medical Relief Grant, ₹40000, 2026-06-20, NEFT892109`
   }
 ];
 

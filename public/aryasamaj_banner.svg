@@ -1,0 +1,258 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 630" width="100%" height="100%">
+  <defs>
+    <!-- Facade Gradients -->
+    <linearGradient id="wallGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#d8cbb5"/>
+      <stop offset="25%" stop-color="#ece4d4"/>
+      <stop offset="60%" stop-color="#dfd4c0"/>
+      <stop offset="100%" stop-color="#cfc0a6"/>
+    </linearGradient>
+
+    <linearGradient id="portalInner" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#3c2a21"/>
+      <stop offset="50%" stop-color="#241711"/>
+      <stop offset="100%" stop-color="#140b07"/>
+    </linearGradient>
+
+    <linearGradient id="corniceGrad" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#a83232"/>
+      <stop offset="60%" stop-color="#881c1c"/>
+      <stop offset="100%" stop-color="#5f1313"/>
+    </linearGradient>
+
+    <linearGradient id="goldSwag" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#fef08a"/>
+      <stop offset="40%" stop-color="#eab308"/>
+      <stop offset="85%" stop-color="#ca8a04"/>
+      <stop offset="100%" stop-color="#854d0e"/>
+    </linearGradient>
+
+    <linearGradient id="redSwag" x1="0%" y1="0%" x2="0%" y2="100%">
+      <stop offset="0%" stop-color="#f87171"/>
+      <stop offset="40%" stop-color="#dc2626"/>
+      <stop offset="85%" stop-color="#991b1b"/>
+      <stop offset="100%" stop-color="#450a0a"/>
+    </linearGradient>
+
+    <!-- Drop Shadows -->
+    <filter id="textShadow" x="-10%" y="-10%" width="130%" height="130%">
+      <feDropShadow dx="3" dy="5" stdDeviation="4" flood-color="#1e1e1e" flood-opacity="0.85"/>
+      <feDropShadow dx="1" dy="2" stdDeviation="1" flood-color="#000000" flood-opacity="0.95"/>
+    </filter>
+
+    <filter id="toranShadow" x="-5%" y="-5%" width="110%" height="120%">
+      <feDropShadow dx="0" dy="8" stdDeviation="8" flood-color="#000000" flood-opacity="0.6"/>
+    </filter>
+  </defs>
+
+  <!-- Background Mandir Facade Wall -->
+  <rect width="1200" height="630" fill="url(#wallGrad)"/>
+
+  <!-- Top Roofline Cornice & Trim -->
+  <rect x="0" y="0" width="1200" height="38" fill="#cbbfa9"/>
+  <rect x="0" y="38" width="1200" height="24" fill="url(#corniceGrad)"/>
+  <rect x="0" y="62" width="1200" height="12" fill="#7f1d1d"/>
+
+  <!-- Vertical Architectural Pilasters -->
+  <rect x="90" y="74" width="80" height="556" fill="#d2c3aa" opacity="0.45"/>
+  <rect x="1030" y="74" width="80" height="556" fill="#d2c3aa" opacity="0.45"/>
+
+  <!-- Grand Entrance Portal Frame (Marble Cutout) -->
+  <rect x="180" y="190" width="840" height="440" fill="#2b1810"/>
+  <rect x="220" y="240" width="760" height="390" fill="url(#portalInner)"/>
+
+  <!-- Marble Door Frame Border -->
+  <rect x="180" y="190" width="840" height="50" fill="#cfc1a8" stroke="#a39379" stroke-width="2"/>
+  <rect x="180" y="190" width="45" height="440" fill="#cfc1a8" stroke="#a39379" stroke-width="2"/>
+  <rect x="975" y="190" width="45" height="440" fill="#cfc1a8" stroke="#a39379" stroke-width="2"/>
+
+  <!-- Subtle Fairy Light Strings (Hanging Wire Lines) -->
+  <g stroke="#ffffff" stroke-width="1.2" opacity="0.45">
+    <line x1="280" y1="62" x2="280" y2="350"/>
+    <line x1="360" y1="62" x2="360" y2="340"/>
+    <line x1="440" y1="62" x2="440" y2="350"/>
+    <line x1="520" y1="62" x2="520" y2="345"/>
+    <line x1="600" y1="62" x2="600" y2="350"/>
+    <line x1="680" y1="62" x2="680" y2="345"/>
+    <line x1="760" y1="62" x2="760" y2="350"/>
+    <line x1="840" y1="62" x2="840" y2="340"/>
+    <line x1="920" y1="62" x2="920" y2="350"/>
+  </g>
+
+  <!-- Rice Lights Glows -->
+  <g fill="#fef08a" opacity="0.85">
+    <circle cx="280" cy="110" r="2.5"/><circle cx="280" cy="170" r="2.5"/>
+    <circle cx="360" cy="95" r="2.5"/><circle cx="360" cy="150" r="2.5"/>
+    <circle cx="440" cy="120" r="2.5"/><circle cx="440" cy="165" r="2.5"/>
+    <circle cx="520" cy="100" r="2.5"/><circle cx="520" cy="160" r="2.5"/>
+    <circle cx="600" cy="115" r="2.5"/><circle cx="600" cy="175" r="2.5"/>
+    <circle cx="680" cy="105" r="2.5"/><circle cx="680" cy="165" r="2.5"/>
+    <circle cx="760" cy="120" r="2.5"/><circle cx="760" cy="170" r="2.5"/>
+    <circle cx="840" cy="95" r="2.5"/><circle cx="840" cy="155" r="2.5"/>
+    <circle cx="920" cy="110" r="2.5"/><circle cx="920" cy="165" r="2.5"/>
+  </g>
+
+  <!-- Authentic Hindi Lettering: आर्य समाज मन्दिर -->
+  <g filter="url(#textShadow)">
+    <text 
+      x="600" 
+      y="148" 
+      text-anchor="middle" 
+      font-family="'Noto Sans Devanagari', 'Mukta', 'Hind', 'Tiro Devanagari Hindi', 'Arial Unicode MS', sans-serif" 
+      font-size="64" 
+      font-weight="900" 
+      letter-spacing="2"
+      fill="#292524"
+    >
+      आर्य समाज मन्दिर
+    </text>
+  </g>
+
+  <!-- Subtle Metallic Highlight over text -->
+  <text 
+    x="599" 
+    y="147" 
+    text-anchor="middle" 
+    font-family="'Noto Sans Devanagari', 'Mukta', 'Hind', 'Tiro Devanagari Hindi', 'Arial Unicode MS', sans-serif" 
+    font-size="64" 
+    font-weight="900" 
+    letter-spacing="2"
+    fill="#44403c"
+    opacity="0.9"
+  >
+    आर्य समाज मन्दिर
+  </text>
+
+  <!-- ================= FLORAL TORAN & DRAPES (ACCURATE TO USER'S IMAGE) ================= -->
+  <g filter="url(#toranShadow)" id="decorative-toran">
+    
+    <!-- Yellow & Red Fabric Swags (Drapes) hanging below flowers -->
+    <!-- Left Golden Swag -->
+    <path d="M 200 370 Q 300 480 400 370 Q 300 450 200 370 Z" fill="url(#goldSwag)"/>
+    <path d="M 200 370 Q 300 480 400 370" fill="none" stroke="#ca8a04" stroke-width="2"/>
+
+    <!-- Left Center Red Swag -->
+    <path d="M 370 370 Q 480 490 590 370 Q 480 460 370 370 Z" fill="url(#redSwag)"/>
+    <path d="M 370 370 Q 480 490 590 370" fill="none" stroke="#7f1d1d" stroke-width="2"/>
+
+    <!-- Right Center Golden Swag -->
+    <path d="M 570 370 Q 690 490 810 370 Q 690 460 570 370 Z" fill="url(#goldSwag)"/>
+    <path d="M 570 370 Q 690 490 810 370" fill="none" stroke="#ca8a04" stroke-width="2"/>
+
+    <!-- Right Red Swag -->
+    <path d="M 780 370 Q 890 480 1000 370 Q 890 450 780 370 Z" fill="url(#redSwag)"/>
+    <path d="M 780 370 Q 890 480 1000 370" fill="none" stroke="#7f1d1d" stroke-width="2"/>
+
+    <!-- Hanging Side Curtains / Drapes on the Left & Right Pillars -->
+    <path d="M 185 360 L 220 360 L 235 600 L 175 600 Z" fill="url(#goldSwag)" opacity="0.95"/>
+    <path d="M 210 365 L 245 365 L 255 580 L 195 580 Z" fill="url(#redSwag)" opacity="0.9"/>
+
+    <path d="M 980 360 L 1015 360 L 1025 600 L 965 600 Z" fill="url(#goldSwag)" opacity="0.95"/>
+    <path d="M 955 365 L 990 365 L 1005 580 L 945 580 Z" fill="url(#redSwag)" opacity="0.9"/>
+
+    <!-- Main Toran Floral Arch Foundation Bar -->
+    <rect x="180" y="320" width="840" height="55" fill="#15803d" rx="10"/>
+
+    <!-- Lush Foliage & Mango Leaves Base Layer -->
+    <g fill="#166534">
+      <path d="M 185 350 Q 200 380 215 350 Z"/>
+      <path d="M 235 350 Q 250 385 265 350 Z"/>
+      <path d="M 285 350 Q 300 380 315 350 Z"/>
+      <path d="M 335 350 Q 350 385 365 350 Z"/>
+      <path d="M 385 350 Q 400 380 415 350 Z"/>
+      <path d="M 435 350 Q 450 385 465 350 Z"/>
+      <path d="M 485 350 Q 500 380 515 350 Z"/>
+      <path d="M 535 350 Q 550 385 565 350 Z"/>
+      <path d="M 585 350 Q 600 380 615 350 Z"/>
+      <path d="M 635 350 Q 650 385 665 350 Z"/>
+      <path d="M 685 350 Q 700 380 715 350 Z"/>
+      <path d="M 735 350 Q 750 385 765 350 Z"/>
+      <path d="M 785 350 Q 800 380 815 350 Z"/>
+      <path d="M 835 350 Q 850 385 865 350 Z"/>
+      <path d="M 885 350 Q 900 380 915 350 Z"/>
+      <path d="M 935 350 Q 950 385 965 350 Z"/>
+      <path d="M 985 350 Q 1000 380 1015 350 Z"/>
+    </g>
+
+    <!-- Thick Garland of Bright Yellow Marigolds and Crimson Red Roses -->
+    <!-- Layer 1: Marigold Clusters (Yellow & Orange) -->
+    <g>
+      <!-- Section 1 (Left): Yellow Marigolds -->
+      <circle cx="210" cy="335" r="14" fill="#facc15"/><circle cx="210" cy="335" r="9" fill="#eab308"/>
+      <circle cx="230" cy="328" r="13" fill="#fde047"/><circle cx="230" cy="328" r="8" fill="#f59e0b"/>
+      <circle cx="245" cy="342" r="14" fill="#facc15"/><circle cx="245" cy="342" r="9" fill="#eab308"/>
+      <circle cx="265" cy="332" r="15" fill="#facc15"/><circle cx="265" cy="332" r="10" fill="#eab308"/>
+
+      <!-- Section 2: Red Rose Cluster -->
+      <circle cx="290" cy="336" r="15" fill="#dc2626"/><circle cx="290" cy="336" r="10" fill="#991b1b"/>
+      <circle cx="310" cy="328" r="14" fill="#ef4444"/><circle cx="310" cy="328" r="9" fill="#b91c1c"/>
+      <circle cx="330" cy="342" r="15" fill="#dc2626"/><circle cx="330" cy="342" r="10" fill="#991b1b"/>
+      <circle cx="350" cy="332" r="14" fill="#ef4444"/><circle cx="350" cy="332" r="9" fill="#b91c1c"/>
+
+      <!-- Section 3: Yellow Marigold Cluster -->
+      <circle cx="375" cy="338" r="15" fill="#facc15"/><circle cx="375" cy="338" r="10" fill="#eab308"/>
+      <circle cx="395" cy="326" r="14" fill="#fde047"/><circle cx="395" cy="326" r="9" fill="#f59e0b"/>
+      <circle cx="415" cy="342" r="15" fill="#facc15"/><circle cx="415" cy="342" r="10" fill="#eab308"/>
+      <circle cx="435" cy="330" r="14" fill="#fde047"/><circle cx="435" cy="330" r="9" fill="#f59e0b"/>
+      <circle cx="455" cy="340" r="15" fill="#facc15"/><circle cx="455" cy="340" r="10" fill="#eab308"/>
+
+      <!-- Section 4: Deep Red Rose Center Left -->
+      <circle cx="485" cy="336" r="16" fill="#dc2626"/><circle cx="485" cy="336" r="11" fill="#991b1b"/>
+      <circle cx="510" cy="326" r="15" fill="#ef4444"/><circle cx="510" cy="326" r="10" fill="#b91c1c"/>
+      <circle cx="535" cy="342" r="16" fill="#dc2626"/><circle cx="535" cy="342" r="11" fill="#991b1b"/>
+      <circle cx="560" cy="330" r="15" fill="#ef4444"/><circle cx="560" cy="330" r="10" fill="#b91c1c"/>
+
+      <!-- Grand Centerpiece: Lush Yellow & Red Floral Crest -->
+      <circle cx="585" cy="338" r="16" fill="#facc15"/><circle cx="585" cy="338" r="11" fill="#eab308"/>
+      <circle cx="600" cy="324" r="17" fill="#fde047"/><circle cx="600" cy="324" r="12" fill="#ca8a04"/>
+      <circle cx="615" cy="338" r="16" fill="#facc15"/><circle cx="615" cy="338" r="11" fill="#eab308"/>
+      <circle cx="600" cy="346" r="15" fill="#dc2626"/><circle cx="600" cy="346" r="10" fill="#991b1b"/>
+
+      <!-- Section 5: Deep Red Rose Center Right -->
+      <circle cx="640" cy="330" r="15" fill="#ef4444"/><circle cx="640" cy="330" r="10" fill="#b91c1c"/>
+      <circle cx="665" cy="342" r="16" fill="#dc2626"/><circle cx="665" cy="342" r="11" fill="#991b1b"/>
+      <circle cx="690" cy="326" r="15" fill="#ef4444"/><circle cx="690" cy="326" r="10" fill="#b91c1c"/>
+      <circle cx="715" cy="336" r="16" fill="#dc2626"/><circle cx="715" cy="336" r="11" fill="#991b1b"/>
+
+      <!-- Section 6: Yellow Marigold Cluster Right -->
+      <circle cx="745" cy="340" r="15" fill="#facc15"/><circle cx="745" cy="340" r="10" fill="#eab308"/>
+      <circle cx="765" cy="330" r="14" fill="#fde047"/><circle cx="765" cy="330" r="9" fill="#f59e0b"/>
+      <circle cx="785" cy="342" r="15" fill="#facc15"/><circle cx="785" cy="342" r="10" fill="#eab308"/>
+      <circle cx="805" cy="326" r="14" fill="#fde047"/><circle cx="805" cy="326" r="9" fill="#f59e0b"/>
+      <circle cx="825" cy="338" r="15" fill="#facc15"/><circle cx="825" cy="338" r="10" fill="#eab308"/>
+
+      <!-- Section 7: Red Rose Cluster -->
+      <circle cx="850" cy="332" r="14" fill="#ef4444"/><circle cx="850" cy="332" r="9" fill="#b91c1c"/>
+      <circle cx="870" cy="342" r="15" fill="#dc2626"/><circle cx="870" cy="342" r="10" fill="#991b1b"/>
+      <circle cx="890" cy="328" r="14" fill="#ef4444"/><circle cx="890" cy="328" r="9" fill="#b91c1c"/>
+      <circle cx="910" cy="336" r="15" fill="#dc2626"/><circle cx="910" cy="336" r="10" fill="#991b1b"/>
+
+      <!-- Section 8 (Far Right): Yellow Marigolds -->
+      <circle cx="935" cy="332" r="15" fill="#facc15"/><circle cx="935" cy="332" r="10" fill="#eab308"/>
+      <circle cx="955" cy="342" r="14" fill="#facc15"/><circle cx="955" cy="342" r="9" fill="#eab308"/>
+      <circle cx="970" cy="328" r="13" fill="#fde047"/><circle cx="970" cy="328" r="8" fill="#f59e0b"/>
+      <circle cx="990" cy="335" r="14" fill="#facc15"/><circle cx="990" cy="335" r="9" fill="#eab308"/>
+    </g>
+
+    <!-- Hanging Flower Garlands Drops at Portal Sides -->
+    <g>
+      <!-- Left side drops -->
+      <circle cx="185" cy="380" r="11" fill="#facc15"/><circle cx="185" cy="380" r="7" fill="#eab308"/>
+      <circle cx="185" cy="402" r="11" fill="#dc2626"/><circle cx="185" cy="402" r="7" fill="#991b1b"/>
+      <circle cx="185" cy="424" r="11" fill="#facc15"/><circle cx="185" cy="424" r="7" fill="#eab308"/>
+      <circle cx="185" cy="446" r="11" fill="#dc2626"/><circle cx="185" cy="446" r="7" fill="#991b1b"/>
+      <circle cx="185" cy="468" r="10" fill="#facc15"/><circle cx="185" cy="468" r="6" fill="#eab308"/>
+
+      <!-- Right side drops -->
+      <circle cx="1015" cy="380" r="11" fill="#facc15"/><circle cx="1015" cy="380" r="7" fill="#eab308"/>
+      <circle cx="1015" cy="402" r="11" fill="#dc2626"/><circle cx="1015" cy="402" r="7" fill="#991b1b"/>
+      <circle cx="1015" cy="424" r="11" fill="#facc15"/><circle cx="1015" cy="424" r="7" fill="#eab308"/>
+      <circle cx="1015" cy="446" r="11" fill="#dc2626"/><circle cx="1015" cy="446" r="7" fill="#991b1b"/>
+      <circle cx="1015" cy="468" r="10" fill="#facc15"/><circle cx="1015" cy="468" r="6" fill="#eab308"/>
+    </g>
+
+  </g>
+
+  <!-- Bottom Vignette Scrim for Contrast -->
+  <rect x="0" y="480" width="1200" height="150" fill="url(#portalInner)" opacity="0.6"/>
+</svg>

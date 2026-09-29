@@ -24,6 +24,10 @@ import { SuperAdminModule } from './components/SuperAdminModule';
 import { QRScannerModal } from './components/QRScannerModal';
 import { LoginModal } from './components/LoginModal';
 import { LandingHomePage } from './components/LandingHomePage';
+import { MobileBottomNav } from './components/MobileBottomNav';
+import { AIFloatingChatBalloon } from './components/AIFloatingChatBalloon';
+import { CommunityThemeModal } from './components/CommunityThemeModal';
+import { computeThemeVars, applyThemeToDocument } from './lib/theme';
 
 import { subscribeCollection, saveToFirestore } from './lib/firebase';
 
@@ -40,6 +44,7 @@ import {
   INITIAL_STUDENTS,
   INITIAL_VAULT_DOCS,
   INITIAL_USER_CREDENTIALS,
+  INITIAL_AUDIT_REPORTS,
 } from './data/mockData';
 
 import {
@@ -54,6 +59,7 @@ import {
   EventItem,
   VaultDocument,
   UserCredential,
+  AuditReport,
 } from './types';
 
 export default function App() {
@@ -69,6 +75,27 @@ export default function App() {
   const [currentUserCredential, setCurrentUserCredential] = useState<UserCredential>(INITIAL_USER_CREDENTIALS[0]);
   const [showLoginModal, setShowLoginModal] = useState<boolean>(false);
   const [showLandingHome, setShowLandingHome] = useState<boolean>(true);
+  const [showThemeModal, setShowThemeModal] = useState<boolean>(false);
+  const [isDarkMode, setIsDarkMode] = useState<boolean>(true);
+
+  // Sync Community Color Theme to Document CSS Variables
+  useEffect(() => {
+    const theme = computeThemeVars(activeOrg.themeColor || '#dc2626', isDarkMode);
+    applyThemeToDocument(theme);
+    if (isDarkMode) {
+      document.documentElement.classList.add('dark');
+    } else {
+      document.documentElement.classList.remove('dark');
+    }
+  }, [activeOrg.themeColor, isDarkMode]);
+
+  const handleUpdateThemeColor = (newColor: string) => {
+    const updatedOrg = {
+      ...activeOrg,
+      themeColor: newColor,
+    };
+    handleUpdateOrg(updatedOrg);
+  };
 
   // App Master Datasets
   const [members, setMembers] = useState<Member[]>(INITIAL_MEMBERS);
@@ -81,6 +108,7 @@ export default function App() {
   const [events, setEvents] = useState<EventItem[]>(INITIAL_EVENTS);
   const [students] = useState(INITIAL_STUDENTS);
   const [vaultDocs, setVaultDocs] = useState<VaultDocument[]>(INITIAL_VAULT_DOCS);
+  const [auditReports, setAuditReports] = useState<AuditReport[]>(INITIAL_AUDIT_REPORTS);
 
   // Real-time Firestore sync setup
   useEffect(() => {
@@ -90,10 +118,20 @@ export default function App() {
     const unsubMembers = subscribeCollection('members', INITIAL_MEMBERS, setMembers);
     const unsubTransactions = subscribeCollection('transactions', INITIAL_FINANCE_TRANSACTIONS, setTransactions);
     const unsubVault = subscribeCollection('vaultDocs', INITIAL_VAULT_DOCS, setVaultDocs);
+    const unsubAuditReports = subscribeCollection('auditReports', INITIAL_AUDIT_REPORTS, setAuditReports);
     const unsubOrgs = subscribeCollection('organizations', INITIAL_ORGANIZATIONS, (orgs) => {
-      setOrganizations(orgs);
-      if (orgs.length > 0) {
-        setActiveOrg((prev) => orgs.find((o) => o.id === prev.id) || orgs[0]);
+      const sanitized = orgs.map((o) => {
+        if (
+          o.bannerUrl?.includes('photo-1541872703-74c5e44368f9') ||
+          (o.name?.toLowerCase().includes('arya samaj') && o.bannerUrl?.includes('unsplash'))
+        ) {
+          return { ...o, bannerUrl: '/aryasamaj_banner.svg' };
+        }
+        return o;
+      });
+      setOrganizations(sanitized);
+      if (sanitized.length > 0) {
+        setActiveOrg((prev) => sanitized.find((o) => o.id === prev.id) || sanitized[0]);
       }
     });
 
@@ -104,6 +142,7 @@ export default function App() {
       unsubMembers();
       unsubTransactions();
       unsubVault();
+      unsubAuditReports();
       unsubOrgs();
     };
   }, []);
@@ -315,6 +354,20 @@ export default function App() {
     setVaultDocs(vaultDocs.filter(d => d.id !== docId));
   };
 
+  const handleAddReport = (newReport: AuditReport) => {
+    setAuditReports([newReport, ...auditReports]);
+    saveToFirestore('auditReports', newReport);
+  };
+
+  const handleUpdateReport = (updatedReport: AuditReport) => {
+    setAuditReports(auditReports.map(r => r.id === updatedReport.id ? updatedReport : r));
+    saveToFirestore('auditReports', updatedReport);
+  };
+
+  const handleDeleteReport = (reportId: string) => {
+    setAuditReports(auditReports.filter(r => r.id !== reportId));
+  };
+
   // Backend API Call for AI RAG Chat
   const handleSendMessage = async (msg: string) => {
     const userMsg = { id: `u-${Date.now()}`, sender: 'user' as const, text: msg };
@@ -480,6 +533,7 @@ export default function App() {
   const tenantTransactions = useMemo(() => transactions.filter((t) => t.orgId === activeOrg.id), [transactions, activeOrg.id]);
   const tenantEvents = useMemo(() => events.filter((e) => e.orgId === activeOrg.id), [events, activeOrg.id]);
   const tenantVaultDocs = useMemo(() => vaultDocs.filter((v) => v.orgId === activeOrg.id), [vaultDocs, activeOrg.id]);
+  const tenantAuditReports = useMemo(() => auditReports.filter((r) => !r.orgId || r.orgId === activeOrg.id), [auditReports, activeOrg.id]);
   const tenantStudents = useMemo(() => students.filter((s) => !(s as any).orgId || (s as any).orgId === activeOrg.id), [students, activeOrg.id]);
 
   if (showLandingHome) {
@@ -493,7 +547,19 @@ export default function App() {
   }
 
   return (
-    <div className="min-h-screen bg-slate-100 dark:bg-slate-950 text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-200">
+    <div 
+      className="min-h-screen text-slate-900 dark:text-slate-100 flex flex-col font-sans transition-colors duration-300 relative selection:bg-rose-500 selection:text-white"
+      style={{
+        backgroundColor: 'var(--community-bg, #0b0f17)',
+      }}
+    >
+      {/* Subtle Community Ambient Radial Atmospheric Glow */}
+      <div 
+        className="fixed top-0 left-1/2 -translate-x-1/2 w-full max-w-7xl h-96 pointer-events-none opacity-20 blur-3xl -z-10 transition-colors duration-500"
+        style={{
+          background: `radial-gradient(ellipse at top, ${activeOrg.themeColor || '#dc2626'}, transparent 70%)`
+        }}
+      />
       
       {/* Top Navbar */}
       <Navbar
@@ -507,6 +573,9 @@ export default function App() {
         onGoHome={() => setShowLandingHome(true)}
         onOpenAIChat={() => setActiveModule('ai-chat')}
         onOpenMobileSidebar={() => setIsMobileSidebarOpen(true)}
+        onOpenThemeModal={() => setShowThemeModal(true)}
+        isDarkMode={isDarkMode}
+        onToggleDarkMode={() => setIsDarkMode(!isDarkMode)}
       />
 
       {/* Main Layout Container */}
@@ -519,10 +588,11 @@ export default function App() {
           isOpenMobile={isMobileSidebarOpen}
           onToggleMobile={() => setIsMobileSidebarOpen(!isMobileSidebarOpen)}
           activeOrgType={activeOrg.type}
+          activeOrg={activeOrg}
         />
 
         {/* Dynamic Main Workspace Content */}
-        <main className="flex-1 p-4 sm:p-6 lg:p-8 overflow-y-auto max-w-7xl mx-auto w-full">
+        <main className="flex-1 p-4 sm:p-6 lg:p-8 pb-24 lg:pb-8 overflow-y-auto max-w-7xl mx-auto w-full">
           {activeModule === 'dashboard' && (
             <AnalyticsDashboard
               activeOrg={activeOrg}
@@ -536,7 +606,12 @@ export default function App() {
           )}
 
           {activeModule === 'org-profile' && (
-            <OrgProfileModule activeOrg={activeOrg} officeBearers={tenantOfficeBearers} />
+            <OrgProfileModule 
+              activeOrg={activeOrg} 
+              officeBearers={tenantOfficeBearers} 
+              onOpenThemeModal={() => setShowThemeModal(true)}
+              onUpdateOrg={handleUpdateOrg}
+            />
           )}
 
           {activeModule === 'membership' && (
@@ -664,7 +739,13 @@ export default function App() {
           )}
 
           {activeModule === 'reports' && (
-            <ReportsModule activeOrg={activeOrg} />
+            <ReportsModule
+              reports={tenantAuditReports}
+              activeOrg={activeOrg}
+              onAddReport={handleAddReport}
+              onUpdateReport={handleUpdateReport}
+              onDeleteReport={handleDeleteReport}
+            />
           )}
 
           {activeModule === 'super-admin' && (
@@ -695,6 +776,32 @@ export default function App() {
           currentUserCredential={currentUserCredential}
           onLoginSuccess={handleLoginSuccess}
           onClose={() => setShowLoginModal(false)}
+        />
+      )}
+
+      {/* Mobile Sticky Bottom Navigation Bar */}
+      <MobileBottomNav
+        activeModule={activeModule}
+        onSelectModule={setActiveModule}
+        onOpenMenuCards={() => setIsMobileSidebarOpen(true)}
+      />
+
+      {/* Floating AI Assistant Chat Balloon Button (Desktop & Tablet bottom-right) */}
+      <AIFloatingChatBalloon
+        activeOrg={activeOrg}
+        chatMessages={chatMessages}
+        onSendMessage={handleSendMessage}
+        onOpenFullChat={() => setActiveModule('ai-chat')}
+        onNavigateModule={setActiveModule}
+      />
+
+      {/* Community Theme & Background Color Modal */}
+      {showThemeModal && (
+        <CommunityThemeModal
+          activeOrg={activeOrg}
+          onClose={() => setShowThemeModal(false)}
+          onUpdateThemeColor={handleUpdateThemeColor}
+          isDarkMode={isDarkMode}
         />
       )}
 

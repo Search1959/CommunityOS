@@ -6,6 +6,7 @@ import {
   Award, 
   QrCode, 
   CheckCircle, 
+  CheckCircle2,
   Image as ImageIcon, 
   Download, 
   Plus, 
@@ -14,7 +15,12 @@ import {
   Pencil,
   Trash2,
   Search,
-  X 
+  X,
+  Ticket,
+  Printer,
+  ShieldCheck,
+  UserCheck,
+  Share2
 } from 'lucide-react';
 import { EventItem, Organization } from '../types';
 import { Pagination } from './Pagination';
@@ -59,6 +65,147 @@ export const EventModule: React.FC<EventModuleProps> = ({
   const [expectedAttendees, setExpectedAttendees] = useState(10000);
   const [budget, setBudget] = useState(2500000);
   const [description, setDescription] = useState('');
+
+  // Enroll / Visitor Registration State
+  const [showEnrollModal, setShowEnrollModal] = useState(false);
+  const [enrollForm, setEnrollForm] = useState({
+    fullName: '',
+    phone: '',
+    email: '',
+    attendeeType: 'Visitor / Community Member',
+    passCount: 1,
+    specialNeeds: ''
+  });
+  const [generatedPass, setGeneratedPass] = useState<{
+    passId: string;
+    fullName: string;
+    phone: string;
+    eventTitle: string;
+    venue: string;
+    date: string;
+    passCount: number;
+    qrCodeUrl: string;
+  } | null>(null);
+
+  // Participation Certificate Generator State
+  const [showCertModal, setShowCertModal] = useState(false);
+  const [certForm, setCertForm] = useState({
+    participantName: '',
+    role: 'Volunteer Service',
+    certificateType: 'Appreciation & Excellence',
+    issueDate: new Date().toISOString().split('T')[0],
+    certificateId: ''
+  });
+
+  const handleEnrollSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!selectedEvent || !enrollForm.fullName.trim()) return;
+
+    const passId = `PASS-${activeOrg.slug.toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`;
+    const passCount = Number(enrollForm.passCount) || 1;
+    
+    const passData = {
+      passId,
+      fullName: enrollForm.fullName,
+      phone: enrollForm.phone || '+91 98300 11223',
+      eventTitle: selectedEvent.title,
+      venue: selectedEvent.venue,
+      date: selectedEvent.startDate,
+      passCount,
+      qrCodeUrl: `https://api.qrserver.com/v1/create-qr-code/?size=200x200&data=${encodeURIComponent(passId)}`
+    };
+
+    setGeneratedPass(passData);
+
+    // Update registeredCount on selected event
+    const updatedEvt: EventItem = {
+      ...selectedEvent,
+      registeredCount: (selectedEvent.registeredCount || 0) + passCount
+    };
+
+    if (onUpdateEvent) {
+      onUpdateEvent(updatedEvt);
+    }
+    setSelectedEvent(updatedEvt);
+  };
+
+  const handleDownloadPass = () => {
+    if (!generatedPass) return;
+
+    const passContent = `====================================================
+${activeOrg.name.toUpperCase()} - OFFICIAL DIGITAL GATE PASS
+====================================================
+Pass Reference ID : ${generatedPass.passId}
+Event Name        : ${generatedPass.eventTitle}
+Venue Location    : ${generatedPass.venue}
+Event Date        : ${generatedPass.date}
+----------------------------------------------------
+Primary Visitor   : ${generatedPass.fullName}
+Contact Phone     : ${generatedPass.phone}
+Admit Count       : ${generatedPass.passCount} Person(s)
+Status            : VERIFIED GATE E-PASS
+----------------------------------------------------
+SECURITY RULES:
+1. Show this e-pass QR at the entry gate.
+2. QR Scanner at gate will record entry time.
+3. Keep phone brightness at high for fast scanning.
+
+====================================================
+Issued by ${activeOrg.name} Event Desk
+====================================================`;
+
+    const blob = new Blob([passContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `GatePass_${generatedPass.passId}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
+
+  const handleDownloadCertificate = () => {
+    if (!selectedEvent || !certForm.participantName.trim()) return;
+
+    const certContent = `
+====================================================================================================
+                                 CERTIFICATE OF PARTICIPATION & HONOR
+====================================================================================================
+
+                                    PROUDLY PRESENTED BY
+                              ${activeOrg.name.toUpperCase()}
+
+                                            TO
+
+                                  ${certForm.participantName.toUpperCase()}
+
+     In grateful recognition of exemplary dedication and outstanding service rendered as
+     "${certForm.role.toUpperCase()}" during the organization and execution of:
+
+                                 "${selectedEvent.title.toUpperCase()}"
+     Held at: ${selectedEvent.venue} on ${certForm.issueDate}
+
+     Certificate Category : ${certForm.certificateType}
+     Verification ID      : ${certForm.certificateId}
+     Digital Verification : ${activeOrg.websiteDomain || 'communityos.org'}/verify/${certForm.certificateId}
+
+----------------------------------------------------------------------------------------------------
+  Authorized Signatory                                        General Secretary / President
+  ${activeOrg.name} Committee                                  Organizing Executive Board
+====================================================================================================
+`;
+
+    const blob = new Blob([certContent], { type: 'text/plain;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = `Certificate_${certForm.participantName.replace(/[^a-zA-Z0-9_-]/g, '_')}_${certForm.certificateId}.txt`;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+  };
 
   const filteredEvents = events.filter((e) =>
     e.title.toLowerCase().includes(search.toLowerCase()) ||
@@ -251,18 +398,39 @@ export const EventModule: React.FC<EventModuleProps> = ({
               </div>
             </div>
 
-            {/* Actions & Auto Certificate */}
-            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between">
+// Actions & Auto Certificate
+            <div className="pt-4 border-t border-slate-100 dark:border-slate-800 flex flex-wrap items-center justify-between gap-3">
               <button
-                onClick={() => alert(`Registration confirmed for ${selectedEvent.title}`)}
-                className="px-4 py-2 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs shadow-md"
+                onClick={() => {
+                  setEnrollForm({
+                    fullName: '',
+                    phone: '',
+                    email: '',
+                    attendeeType: 'Visitor / Community Member',
+                    passCount: 1,
+                    specialNeeds: ''
+                  });
+                  setGeneratedPass(null);
+                  setShowEnrollModal(true);
+                }}
+                className="px-4 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 active:bg-rose-800 text-white font-extrabold text-xs shadow-md hover:shadow-rose-500/25 transition-all flex items-center gap-2 cursor-pointer"
               >
-                Enroll as Attendee / Visitor
+                <Ticket className="w-4 h-4 text-rose-200" />
+                <span>Enroll as Attendee / Visitor</span>
               </button>
 
               <button
-                onClick={() => alert(`Volunteer Attendance Certificate for ${selectedEvent.title} generated PDF.`)}
-                className="px-4 py-2 rounded-xl bg-slate-900 text-white font-bold text-xs flex items-center gap-1.5"
+                onClick={() => {
+                  setCertForm({
+                    participantName: '',
+                    role: 'Volunteer Service',
+                    certificateType: 'Appreciation & Excellence',
+                    issueDate: new Date().toISOString().split('T')[0],
+                    certificateId: `CERT-${activeOrg.slug.toUpperCase()}-${Math.floor(100000 + Math.random() * 900000)}`
+                  });
+                  setShowCertModal(true);
+                }}
+                className="px-4 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center gap-2 shadow-md transition-all cursor-pointer"
               >
                 <Award className="w-4 h-4 text-amber-400" />
                 <span>Generate Participation Certificate</span>
@@ -556,6 +724,296 @@ export const EventModule: React.FC<EventModuleProps> = ({
                 </button>
               </div>
             </form>
+          </div>
+        </div>
+      )}
+
+      {/* ENROLLMENT / GATE PASS MODAL */}
+      {showEnrollModal && selectedEvent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-md w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => { setShowEnrollModal(false); setGeneratedPass(null); }}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            {!generatedPass ? (
+              <>
+                <div className="flex items-center gap-2">
+                  <div className="p-2.5 rounded-2xl bg-rose-100 dark:bg-rose-950 text-rose-600 dark:text-rose-400">
+                    <Ticket className="w-5 h-5" />
+                  </div>
+                  <div>
+                    <h2 className="text-base font-extrabold text-slate-900 dark:text-white">Visitor & Attendee Registration</h2>
+                    <p className="text-xs text-slate-500">{selectedEvent.title}</p>
+                  </div>
+                </div>
+
+                <form onSubmit={handleEnrollSubmit} className="space-y-3 text-xs">
+                  <div>
+                    <label className="block text-slate-500 font-medium mb-1">Full Name *</label>
+                    <input
+                      type="text"
+                      required
+                      placeholder="e.g. Ananya Sen"
+                      value={enrollForm.fullName}
+                      onChange={(e) => setEnrollForm({ ...enrollForm, fullName: e.target.value })}
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-900 dark:text-white"
+                    />
+                  </div>
+
+                  <div className="grid grid-cols-2 gap-2">
+                    <div>
+                      <label className="block text-slate-500 font-medium mb-1">Mobile / WhatsApp *</label>
+                      <input
+                        type="tel"
+                        required
+                        placeholder="+91 98300 11223"
+                        value={enrollForm.phone}
+                        onChange={(e) => setEnrollForm({ ...enrollForm, phone: e.target.value })}
+                        className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-900 dark:text-white"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-slate-500 font-medium mb-1">Pass Count *</label>
+                      <input
+                        type="number"
+                        min="1"
+                        max="10"
+                        required
+                        value={enrollForm.passCount}
+                        onChange={(e) => setEnrollForm({ ...enrollForm, passCount: Number(e.target.value) })}
+                        className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-900 dark:text-white"
+                      />
+                    </div>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-500 font-medium mb-1">Visitor Category</label>
+                    <select
+                      value={enrollForm.attendeeType}
+                      onChange={(e) => setEnrollForm({ ...enrollForm, attendeeType: e.target.value })}
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-900 dark:text-white"
+                    >
+                      <option value="Visitor / Community Member">Visitor / Community Member</option>
+                      <option value="Registered Society Member">Registered Society Member</option>
+                      <option value="Festival Volunteer">Festival Volunteer</option>
+                      <option value="VIP / Invited Guest">VIP / Invited Guest</option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label className="block text-slate-500 font-medium mb-1">Special Assistance / Notes</label>
+                    <input
+                      type="text"
+                      placeholder="e.g. Wheelchair assistance or VIP seating request"
+                      value={enrollForm.specialNeeds}
+                      onChange={(e) => setEnrollForm({ ...enrollForm, specialNeeds: e.target.value })}
+                      className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-900 dark:text-white"
+                    />
+                  </div>
+
+                  <div className="flex gap-2 pt-2">
+                    <button
+                      type="button"
+                      onClick={() => setShowEnrollModal(false)}
+                      className="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-300 cursor-pointer"
+                    >
+                      Cancel
+                    </button>
+                    <button
+                      type="submit"
+                      className="flex-1 py-2.5 rounded-xl bg-rose-600 hover:bg-rose-700 text-white font-extrabold shadow-md cursor-pointer transition-all"
+                    >
+                      Generate Digital Pass
+                    </button>
+                  </div>
+                </form>
+              </>
+            ) : (
+              <div className="space-y-4">
+                <div className="text-center space-y-1">
+                  <div className="inline-flex p-2 rounded-full bg-emerald-100 dark:bg-emerald-950 text-emerald-600 dark:text-emerald-400 mb-1">
+                    <CheckCircle2 className="w-8 h-8" />
+                  </div>
+                  <h2 className="text-base font-extrabold text-slate-900 dark:text-white">Registration Confirmed!</h2>
+                  <p className="text-xs text-slate-500">Digital Gate E-Pass generated successfully</p>
+                </div>
+
+                {/* Styled E-Pass Ticket */}
+                <div className="p-4 rounded-2xl bg-gradient-to-br from-slate-900 via-slate-800 to-slate-950 text-white border border-slate-700 shadow-xl space-y-3 relative overflow-hidden">
+                  <div className="flex justify-between items-start border-b border-slate-700 pb-2">
+                    <div>
+                      <span className="text-[10px] font-bold text-rose-400 uppercase tracking-wider">{activeOrg.name}</span>
+                      <h3 className="text-sm font-extrabold text-white">{generatedPass.eventTitle}</h3>
+                    </div>
+                    <span className="px-2 py-0.5 rounded text-[10px] font-mono font-bold bg-amber-400 text-slate-950">
+                      {generatedPass.passCount} PASS(ES)
+                    </span>
+                  </div>
+
+                  <div className="grid grid-cols-3 gap-2 items-center">
+                    <div className="col-span-2 space-y-1.5 text-[11px]">
+                      <div>
+                        <span className="text-slate-400 block text-[9px] uppercase font-bold">Visitor Name</span>
+                        <strong className="text-white text-xs">{generatedPass.fullName}</strong>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[9px] uppercase font-bold">Gate Venue & Date</span>
+                        <span className="text-slate-200">{generatedPass.venue} ({generatedPass.date})</span>
+                      </div>
+                      <div>
+                        <span className="text-slate-400 block text-[9px] uppercase font-bold">Pass Reference ID</span>
+                        <span className="font-mono text-amber-400 font-bold">{generatedPass.passId}</span>
+                      </div>
+                    </div>
+
+                    <div className="p-1.5 bg-white rounded-xl text-center flex flex-col items-center justify-center">
+                      <img src={generatedPass.qrCodeUrl} alt="Gate Pass QR" className="w-20 h-20 object-contain" />
+                      <span className="text-[8px] font-mono text-slate-900 font-bold mt-0.5">SCAN AT GATE</span>
+                    </div>
+                  </div>
+                </div>
+
+                <div className="flex gap-2">
+                  <button
+                    onClick={handleDownloadPass}
+                    className="flex-1 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold text-xs flex items-center justify-center gap-1.5 shadow-md cursor-pointer"
+                  >
+                    <Download className="w-4 h-4" />
+                    <span>Download Gate Pass</span>
+                  </button>
+                  <button
+                    onClick={() => { setShowEnrollModal(false); setGeneratedPass(null); }}
+                    className="px-4 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 text-slate-700 dark:text-slate-200 font-bold text-xs cursor-pointer"
+                  >
+                    Done
+                  </button>
+                </div>
+              </div>
+            )}
+          </div>
+        </div>
+      )}
+
+      {/* GENERATE PARTICIPATION CERTIFICATE MODAL */}
+      {showCertModal && selectedEvent && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center p-4 bg-slate-950/80 backdrop-blur-sm animate-in fade-in">
+          <div className="bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 rounded-3xl max-w-xl w-full p-6 space-y-4 shadow-2xl relative max-h-[90vh] overflow-y-auto">
+            <button
+              onClick={() => setShowCertModal(false)}
+              className="absolute top-4 right-4 text-slate-400 hover:text-slate-600 dark:hover:text-white cursor-pointer"
+            >
+              <X className="w-5 h-5" />
+            </button>
+
+            <div className="flex items-center gap-2">
+              <div className="p-2.5 rounded-2xl bg-amber-100 dark:bg-amber-950 text-amber-600 dark:text-amber-400">
+                <Award className="w-5 h-5" />
+              </div>
+              <div>
+                <h2 className="text-base font-extrabold text-slate-900 dark:text-white">Generate Participation Certificate</h2>
+                <p className="text-xs text-slate-500">{selectedEvent.title}</p>
+              </div>
+            </div>
+
+            <div className="space-y-3 text-xs">
+              <div>
+                <label className="block text-slate-500 font-medium mb-1">Participant / Volunteer Name *</label>
+                <input
+                  type="text"
+                  required
+                  placeholder="e.g. Sourav Mukherjee"
+                  value={certForm.participantName}
+                  onChange={(e) => setCertForm({ ...certForm, participantName: e.target.value })}
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-bold text-slate-900 dark:text-white"
+                />
+              </div>
+
+              <div className="grid grid-cols-2 gap-2">
+                <div>
+                  <label className="block text-slate-500 font-medium mb-1">Role / Designation *</label>
+                  <select
+                    value={certForm.role}
+                    onChange={(e) => setCertForm({ ...certForm, role: e.target.value })}
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-900 dark:text-white"
+                  >
+                    <option value="Volunteer Service">Volunteer Service</option>
+                    <option value="Cultural Performer">Cultural Performer</option>
+                    <option value="Medical Camp Assistant">Medical Camp Assistant</option>
+                    <option value="Security & Gate Controller">Security & Gate Controller</option>
+                    <option value="Executive Organizer">Executive Organizer</option>
+                    <option value="Event Participant">Event Participant</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label className="block text-slate-500 font-medium mb-1">Issue Date *</label>
+                  <input
+                    type="date"
+                    required
+                    value={certForm.issueDate}
+                    onChange={(e) => setCertForm({ ...certForm, issueDate: e.target.value })}
+                    className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-slate-900 dark:text-white"
+                  />
+                </div>
+              </div>
+
+              {/* Certificate Live Preview Canvas */}
+              {certForm.participantName.trim() && (
+                <div className="p-6 rounded-2xl bg-amber-50/50 dark:bg-amber-950/20 border-2 border-amber-300 dark:border-amber-700/60 space-y-3 text-center relative overflow-hidden">
+                  <div className="absolute top-2 right-2 px-2 py-0.5 rounded text-[9px] font-mono font-bold bg-amber-400 text-slate-950">
+                    {certForm.certificateId}
+                  </div>
+
+                  <span className="text-[10px] uppercase tracking-widest font-extrabold text-amber-700 dark:text-amber-400">
+                    CERTIFICATE OF PARTICIPATION & HONOR
+                  </span>
+
+                  <h3 className="text-xs font-semibold text-slate-600 dark:text-slate-300">
+                    PROUDLY PRESENTED BY <strong className="text-slate-900 dark:text-white">{activeOrg.name.toUpperCase()}</strong>
+                  </h3>
+
+                  <div className="py-2">
+                    <span className="text-slate-400 text-[10px] block mb-0.5">THIS IS GRANTED TO</span>
+                    <h2 className="text-xl font-extrabold text-slate-900 dark:text-amber-300 tracking-wide font-serif">
+                      {certForm.participantName}
+                    </h2>
+                  </div>
+
+                  <p className="text-[11px] text-slate-600 dark:text-slate-300 leading-relaxed max-w-md mx-auto">
+                    In recognition of valuable contribution and service as <strong className="text-rose-600 dark:text-rose-400">{certForm.role}</strong> during <strong className="text-slate-900 dark:text-white">{selectedEvent.title}</strong> at {selectedEvent.venue}.
+                  </p>
+
+                  <div className="pt-3 border-t border-amber-200 dark:border-amber-800/60 flex items-center justify-between text-[10px] text-slate-500">
+                    <span>Authorized Official Stamp</span>
+                    <span className="font-mono text-amber-600 font-bold">VERIFIED COMMUNITY OS</span>
+                  </div>
+                </div>
+              )}
+
+              <div className="flex gap-2 pt-2">
+                <button
+                  type="button"
+                  onClick={() => setShowCertModal(false)}
+                  className="flex-1 py-2.5 rounded-xl bg-slate-100 dark:bg-slate-800 font-bold text-slate-700 dark:text-slate-300 cursor-pointer"
+                >
+                  Close
+                </button>
+                <button
+                  type="button"
+                  disabled={!certForm.participantName.trim()}
+                  onClick={handleDownloadCertificate}
+                  className="flex-1 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-extrabold shadow-md cursor-pointer transition-all disabled:opacity-50 flex items-center justify-center gap-2"
+                >
+                  <Download className="w-4 h-4 text-amber-400" />
+                  <span>Download Certificate</span>
+                </button>
+              </div>
+            </div>
           </div>
         </div>
       )}

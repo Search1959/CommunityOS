@@ -11,9 +11,8 @@ import {
   XCircle, 
   Clock, 
   Download, 
-  Sparkles,
   QrCode,
-  FileCheck
+  LayoutGrid
 } from 'lucide-react';
 import { 
   ResponsiveContainer, 
@@ -76,10 +75,11 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
       {/* Header Bar Overview */}
       <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-2 border-b border-slate-200 dark:border-slate-800">
         <div>
-          <div className="flex items-center gap-2">
+          <div className="flex items-center gap-2.5">
             <h1 className="text-xl font-bold text-slate-900 dark:text-white">Operational Overview</h1>
-            <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold rounded-full border border-emerald-200 dark:border-emerald-800">
-              LIVE DATA
+            <span className="inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
+              <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+              <span>Live Analytics</span>
             </span>
           </div>
           <p className="text-xs text-slate-500 dark:text-slate-400 mt-0.5">
@@ -90,191 +90,156 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
         <div className="flex items-center gap-2">
           <button
             onClick={() => onNavigateModule('donations')}
-            className="px-3.5 py-2 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5"
+            className="px-4 py-2 rounded-xl text-white font-bold text-xs shadow-sm transition-all flex items-center gap-1.5 hover:opacity-95 cursor-pointer"
+            style={{ backgroundColor: activeOrg.themeColor || '#dc2626' }}
           >
             <IndianRupee className="w-3.5 h-3.5" />
             <span>Collect Donation</span>
           </button>
-
-          <button
-            onClick={onOpenAIChat}
-            className="px-3.5 py-2 rounded-lg bg-slate-900 dark:bg-slate-800 text-white hover:bg-slate-800 font-semibold text-xs border border-slate-800 transition-all flex items-center gap-1.5"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-400" />
-            <span>Document AI</span>
-          </button>
         </div>
+      </div>
+
+      {/* Mobile Quick Menu Cards Banner */}
+      <div 
+        className="lg:hidden p-3.5 rounded-2xl text-white shadow-md flex items-center justify-between gap-3 transition-colors"
+        style={{
+          background: `linear-gradient(135deg, ${activeOrg.themeColor || '#dc2626'}ee, #1e293b)`
+        }}
+      >
+        <div className="flex items-center gap-2.5">
+          <div className="p-2 rounded-xl bg-white/20 backdrop-blur-sm shrink-0">
+            <LayoutGrid className="w-5 h-5 text-white" />
+          </div>
+          <div>
+            <p className="text-xs font-black tracking-tight">Explore 20 Mobile Menu Cards</p>
+            <p className="text-[10px] text-white/80">Touch-friendly cards for Members, 80G, Events & Blood SOS</p>
+          </div>
+        </div>
+        <button
+          onClick={() => {
+            const btn = document.getElementById('btn-open-mobile-sidebar') || document.getElementById('btn-mobile-nav-all-cards');
+            btn?.click();
+          }}
+          className="px-3 py-1.5 rounded-xl bg-white text-slate-900 font-extrabold text-xs shadow-sm hover:bg-slate-100 active:scale-95 transition-all shrink-0 cursor-pointer"
+        >
+          Open Cards
+        </button>
       </div>
 
       {/* KPI Stats Grid */}
       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-5">
         
         {/* Active Members */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div 
+          className="bg-white dark:bg-slate-900/90 p-5 rounded-2xl border shadow-xs transition-all"
+          style={{ borderColor: 'var(--community-border, rgba(0,0,0,0.08))' }}
+        >
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Active Members</p>
           <div className="flex items-end justify-between mt-2">
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{activeOrg.membersCount.toLocaleString('en-IN')}</h3>
-            <span className="text-emerald-600 dark:text-emerald-400 text-[10px] font-bold bg-emerald-50 dark:bg-emerald-950/50 px-2 py-0.5 rounded-full">+12% this month</span>
+            <h3 className="text-2xl font-bold font-mono tabular-nums text-slate-900 dark:text-white">
+              {activeOrg.membersCount.toLocaleString('en-IN')}
+            </h3>
+            <span className="text-emerald-600 dark:text-emerald-400 text-xs font-semibold tabular-nums">+12% MoM</span>
           </div>
         </div>
 
         {/* Donations YTD */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div 
+          className="bg-white dark:bg-slate-900/90 p-5 rounded-2xl border shadow-xs transition-all"
+          style={{ borderColor: 'var(--community-border, rgba(0,0,0,0.08))' }}
+        >
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Donations (YTD)</p>
           <div className="flex items-end justify-between mt-2">
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">₹{(activeOrg.totalDonationsYTD / 100000).toFixed(2)}L</h3>
-            <span className="text-indigo-600 dark:text-indigo-400 text-[10px] font-bold bg-indigo-50 dark:bg-indigo-950/50 px-2 py-0.5 rounded-full">80G Tax Exempt</span>
+            <h3 className="text-2xl font-bold font-mono tabular-nums text-slate-900 dark:text-white">
+              ₹{(activeOrg.totalDonationsYTD / 100000).toFixed(2)}L
+            </h3>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">80G Tax Exempt</span>
           </div>
         </div>
 
         {/* Welfare Disbursed */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div 
+          className="bg-white dark:bg-slate-900/90 p-5 rounded-2xl border shadow-xs transition-all"
+          style={{ borderColor: 'var(--community-border, rgba(0,0,0,0.08))' }}
+        >
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Scholarships & Welfare</p>
           <div className="flex items-end justify-between mt-2">
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{activeOrg.activeSchemesCount} Schemes</h3>
-            <span className="text-slate-600 dark:text-slate-400 text-[10px] font-bold">₹12.4L Disbursed</span>
+            <h3 className="text-2xl font-bold font-mono tabular-nums text-slate-900 dark:text-white">
+              {activeOrg.activeSchemesCount} Schemes
+            </h3>
+            <span className="text-xs font-medium text-slate-500 dark:text-slate-400">₹12.4L Disbursed</span>
           </div>
         </div>
 
         {/* Pending Requests */}
-        <div className="bg-white dark:bg-slate-900 p-5 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm">
+        <div 
+          className="bg-white dark:bg-slate-900/90 p-5 rounded-2xl border shadow-xs transition-all"
+          style={{ borderColor: 'var(--community-border, rgba(0,0,0,0.08))' }}
+        >
           <p className="text-xs font-bold text-slate-500 dark:text-slate-400 uppercase tracking-wider">Pending Verification</p>
           <div className="flex items-end justify-between mt-2">
-            <h3 className="text-2xl font-bold text-slate-900 dark:text-white">{pendingApplications.length}</h3>
-            <span className="text-amber-600 dark:text-amber-400 text-[10px] font-bold underline font-mono cursor-pointer" onClick={() => onNavigateModule('welfare')}>Action Needed</span>
+            <h3 className="text-2xl font-bold font-mono tabular-nums text-amber-600 dark:text-amber-400">
+              {pendingApplications.length}
+            </h3>
+            <span 
+              className="text-xs font-bold underline cursor-pointer" 
+              style={{ color: 'var(--community-text-accent, #dc2626)' }}
+              onClick={() => onNavigateModule('welfare')}
+            >
+              Action Needed
+            </span>
           </div>
         </div>
 
       </div>
 
-      {/* Main Grid: AI Intelligence Pane & Analytics */}
-      <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 items-start">
+      {/* Operational Highlights: Pending Approvals & Event Roadmap */}
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 items-stretch">
         
-        {/* Gemini Document AI Interactive Intelligence Pane (Col 8) */}
-        <div className="lg:col-span-8 bg-indigo-900 rounded-2xl shadow-xl overflow-hidden flex flex-col h-[420px] border border-indigo-700/50">
-          
-          <div className="p-4 bg-indigo-950/80 border-b border-indigo-800 flex items-center justify-between">
-            <div className="flex items-center gap-3">
-              <div className="w-8 h-8 rounded-full bg-emerald-400 flex items-center justify-center animate-pulse shadow-md shadow-emerald-400/20">
-                <Sparkles className="w-4 h-4 text-indigo-950" />
-              </div>
-              <div>
-                <h3 className="text-white font-bold text-sm">Gemini Document AI & Grounded Assistant</h3>
-                <p className="text-indigo-300 text-[10px]">Instant search across Trust Deeds, Audit Reports & Meeting Minutes</p>
-              </div>
-            </div>
-            <button 
-              onClick={() => onNavigateModule('vault')}
-              className="px-3 py-1 bg-white/10 hover:bg-white/20 text-white text-[10px] rounded border border-white/20 uppercase tracking-wide transition-colors"
-            >
-              OCR Vault
-            </button>
+        {/* Pending Approvals Card */}
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col min-h-[220px]">
+          <div className="p-3.5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
+            <h3 className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">Pending Approvals</h3>
+            <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide cursor-pointer hover:underline" onClick={() => onNavigateModule('welfare')}>View All</span>
           </div>
-
-          <div className="flex-1 p-5 space-y-4 overflow-y-auto custom-scrollbar bg-indigo-900/90">
-            
-            {/* User prompt preview */}
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded bg-indigo-800 text-indigo-300 flex items-center justify-center text-[10px] font-bold">U</div>
-              <div className="bg-indigo-800/60 p-3 rounded-lg rounded-tl-none border border-indigo-700/50 max-w-[85%]">
-                <p className="text-xs text-indigo-100">Show me the total scholarship budget allocated for the current academic year and who approved it.</p>
-              </div>
-            </div>
-
-            {/* AI Answer preview with citations */}
-            <div className="flex items-start gap-3">
-              <div className="w-6 h-6 rounded bg-emerald-500 text-emerald-950 flex items-center justify-center text-[10px] font-bold">AI</div>
-              <div className="bg-white/10 p-3.5 rounded-lg rounded-tl-none border border-white/10 max-w-[85%] space-y-2">
-                <p className="text-xs text-white leading-relaxed">
-                  According to the <span className="underline font-bold text-emerald-300">Executive Meeting Minutes (Ref: AGM-2026-03)</span>, a budget of <span className="text-emerald-300 font-bold">₹25,00,000</span> was approved by the Secretary for Education & Welfare Scholarships.
-                </p>
-                <div className="pt-2 border-t border-white/10 flex flex-wrap gap-2">
-                  <button 
-                    onClick={() => onNavigateModule('vault')}
-                    className="px-2.5 py-1 bg-indigo-800/80 hover:bg-indigo-700 rounded text-[10px] text-indigo-200 border border-indigo-600 transition-colors flex items-center gap-1"
-                  >
-                    <FileCheck className="w-3 h-3 text-emerald-400" />
-                    <span>View Source PDF</span>
-                  </button>
-                  <button 
-                    onClick={onOpenAIChat}
-                    className="px-2.5 py-1 bg-indigo-800/80 hover:bg-indigo-700 rounded text-[10px] text-indigo-200 border border-indigo-600 transition-colors"
-                  >
-                    Ask Follow-up
-                  </button>
+          <div className="flex-1 p-2 space-y-1.5 overflow-y-auto custom-scrollbar">
+            {pendingApplications.length === 0 ? (
+              <div className="text-center py-8 text-xs text-slate-400">All applications approved!</div>
+            ) : (
+              pendingApplications.slice(0, 4).map((app) => (
+                <div key={app.id} className="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-lg transition-colors">
+                  <div className="truncate pr-2">
+                    <p className="text-[11px] font-bold text-slate-900 dark:text-white truncate">{app.applicantName}</p>
+                    <p className="text-[9px] text-slate-500 truncate">{app.schemeName}</p>
+                  </div>
+                  <div className="flex items-center gap-1 shrink-0">
+                    <button 
+                      onClick={() => onApproveApplication(app.id)}
+                      className="p-1 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950 rounded"
+                      title="Approve"
+                    >
+                      <CheckCircle2 className="w-4 h-4" />
+                    </button>
+                    <button 
+                      onClick={() => onRejectApplication(app.id)}
+                      className="p-1 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950 rounded"
+                      title="Reject"
+                    >
+                      <XCircle className="w-4 h-4" />
+                    </button>
+                  </div>
                 </div>
-              </div>
-            </div>
-
+              ))
+            )}
           </div>
-
-          <div className="p-3 bg-indigo-950">
-            <div className="relative flex items-center">
-              <input 
-                type="text" 
-                placeholder={`Ask Community AI about ${activeOrg.name}...`} 
-                onKeyDown={(e) => {
-                  if (e.key === 'Enter') onOpenAIChat();
-                }}
-                className="w-full bg-indigo-900/80 border border-indigo-700 text-xs text-white p-3 pr-12 rounded-lg outline-none focus:border-emerald-500 transition-all placeholder-indigo-300/60"
-              />
-              <button 
-                onClick={onOpenAIChat}
-                className="absolute right-3 text-indigo-400 hover:text-emerald-400 transition-colors"
-              >
-                <Sparkles className="w-4 h-4" />
-              </button>
-            </div>
-          </div>
-
         </div>
 
-        {/* Side Panels (Col 4) */}
-        <div className="lg:col-span-4 space-y-5">
-          
-          {/* Pending Approvals Card */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm flex flex-col h-[200px]">
-            <div className="p-3.5 border-b border-slate-100 dark:border-slate-800 flex justify-between items-center">
-              <h3 className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">Pending Approvals</h3>
-              <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 uppercase tracking-wide cursor-pointer" onClick={() => onNavigateModule('welfare')}>View All</span>
-            </div>
-            <div className="flex-1 p-2 space-y-1.5 overflow-y-auto custom-scrollbar">
-              {pendingApplications.length === 0 ? (
-                <div className="text-center py-6 text-xs text-slate-400">All applications approved!</div>
-              ) : (
-                pendingApplications.slice(0, 3).map((app) => (
-                  <div key={app.id} className="flex items-center justify-between p-2 hover:bg-slate-50 dark:hover:bg-slate-800/60 rounded-lg transition-colors">
-                    <div className="truncate pr-2">
-                      <p className="text-[11px] font-bold text-slate-900 dark:text-white truncate">{app.applicantName}</p>
-                      <p className="text-[9px] text-slate-500 truncate">{app.schemeName}</p>
-                    </div>
-                    <div className="flex items-center gap-1 shrink-0">
-                      <button 
-                        onClick={() => onApproveApplication(app.id)}
-                        className="p-1 text-emerald-600 hover:bg-emerald-50 dark:hover:bg-emerald-950 rounded"
-                        title="Approve"
-                      >
-                        <CheckCircle2 className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => onRejectApplication(app.id)}
-                        className="p-1 text-rose-600 hover:bg-rose-50 dark:hover:bg-rose-950 rounded"
-                        title="Reject"
-                      >
-                        <XCircle className="w-4 h-4" />
-                      </button>
-                    </div>
-                  </div>
-                ))
-              )}
-            </div>
-          </div>
-
-          {/* Event Roadmap */}
-          <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4">
+        {/* Event Roadmap */}
+        <div className="bg-white dark:bg-slate-900 rounded-xl border border-slate-200 dark:border-slate-800 shadow-sm p-4 min-h-[220px] flex flex-col justify-between">
+          <div>
             <div className="flex items-center justify-between mb-3">
               <h3 className="text-xs font-bold text-slate-800 dark:text-white uppercase tracking-wider">Event Roadmap</h3>
-              <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 cursor-pointer" onClick={() => onNavigateModule('events')}>Calendar →</span>
+              <span className="text-[10px] font-bold text-indigo-600 dark:text-indigo-400 cursor-pointer hover:underline" onClick={() => onNavigateModule('events')}>Calendar →</span>
             </div>
             <div className="space-y-3">
               <div className="flex gap-3 items-center">
@@ -301,6 +266,10 @@ export const AnalyticsDashboard: React.FC<AnalyticsDashboardProps> = ({
             </div>
           </div>
 
+          <div className="mt-3 pt-3 border-t border-slate-100 dark:border-slate-800 flex items-center justify-between text-[11px] text-slate-500">
+            <span>2 upcoming community initiatives</span>
+            <span className="text-indigo-600 dark:text-indigo-400 font-semibold cursor-pointer hover:underline" onClick={() => onNavigateModule('events')}>View Schedule</span>
+          </div>
         </div>
 
       </div>

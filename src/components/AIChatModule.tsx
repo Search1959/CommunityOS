@@ -9,7 +9,8 @@ import {
   User, 
   MessageSquare,
   RefreshCw,
-  Globe
+  Globe,
+  Monitor
 } from 'lucide-react';
 import { Organization } from '../types';
 
@@ -51,7 +52,22 @@ export const AIChatModule: React.FC<AIChatModuleProps> = ({
   };
 
   return (
-    <div className="h-[calc(100vh-8rem)] flex flex-col rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
+    <>
+      {/* Mobile Notice (AI Chat removed from mobile version) */}
+      <div className="lg:hidden p-8 rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm text-center flex flex-col items-center justify-center my-8 space-y-4 max-w-md mx-auto">
+        <div className="w-16 h-16 rounded-2xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-600 dark:text-indigo-400 flex items-center justify-center shadow-sm">
+          <Monitor className="w-8 h-8" />
+        </div>
+        <div className="space-y-1.5">
+          <h3 className="text-base font-bold text-slate-900 dark:text-white">Desktop & Tablet Only</h3>
+          <p className="text-xs text-slate-500 leading-relaxed">
+            The AI RAG Assistant is disabled on mobile devices for improved speed and layout clarity. Please access CommunityOS on a desktop or laptop to query grounded documents and minutes.
+          </p>
+        </div>
+      </div>
+
+      {/* Desktop AI Chat Module */}
+      <div className="hidden lg:flex h-[calc(100vh-8rem)] flex-col rounded-2xl bg-white dark:bg-slate-900 border border-slate-200 dark:border-slate-800 shadow-sm overflow-hidden">
       
       {/* Header */}
       <div className="p-4 bg-indigo-950 text-white flex items-center justify-between border-b border-indigo-800">
@@ -194,5 +210,6 @@ export const AIChatModule: React.FC<AIChatModuleProps> = ({
       </form>
 
     </div>
+    </>
   );
 };

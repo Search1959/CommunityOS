@@ -14,9 +14,11 @@ import {
   PhoneCall,
   Download,
   Menu,
+  LayoutGrid,
   Plus,
   LogIn,
-  KeyRound
+  KeyRound,
+  Palette
 } from 'lucide-react';
 import { Organization, UserCredential, UserRole } from '../types';
 
@@ -37,6 +39,7 @@ interface NavbarProps {
   searchQuery?: string;
   onSearchChange?: (q: string) => void;
   onOpenMobileSidebar?: () => void;
+  onOpenThemeModal?: () => void;
 }
 
 export const Navbar: React.FC<NavbarProps> = ({
@@ -56,6 +59,7 @@ export const Navbar: React.FC<NavbarProps> = ({
   searchQuery = '',
   onSearchChange,
   onOpenMobileSidebar,
+  onOpenThemeModal,
 }) => {
   const [showOrgDropdown, setShowOrgDropdown] = useState(false);
   const [showRoleDropdown, setShowRoleDropdown] = useState(false);
@@ -89,15 +93,16 @@ export const Navbar: React.FC<NavbarProps> = ({
         {/* Mobile Hamburger & Brand & Multi-Tenant Selector */}
         <div className="flex items-center gap-2 sm:gap-3">
           
-          {/* Mobile Sidebar Toggle Button */}
+          {/* Mobile Menu Cards Toggle Button */}
           {onOpenMobileSidebar && (
             <button
               id="btn-open-mobile-sidebar"
               onClick={onOpenMobileSidebar}
-              className="p-2 rounded-lg text-slate-600 dark:text-slate-300 hover:bg-slate-100 dark:hover:bg-slate-800 lg:hidden transition-colors"
-              title="Open Navigation Menu"
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-xl bg-indigo-50 dark:bg-indigo-950/60 border border-indigo-200 dark:border-indigo-800 text-indigo-700 dark:text-indigo-300 font-extrabold text-xs lg:hidden hover:bg-indigo-100 dark:hover:bg-indigo-900 transition-all cursor-pointer shadow-xs active:scale-95"
+              title="Open Mobile Menu Cards"
             >
-              <Menu className="w-5 h-5" />
+              <LayoutGrid className="w-4 h-4 text-indigo-600 dark:text-indigo-400" />
+              <span className="hidden xs:inline tracking-tight">Menu Cards</span>
             </button>
           )}
 
@@ -106,16 +111,20 @@ export const Navbar: React.FC<NavbarProps> = ({
             className="flex items-center gap-2 cursor-pointer group"
             title="Return to Home Landing Portal"
           >
-            <div className="w-8 h-8 rounded-lg bg-indigo-600 flex items-center justify-center text-white font-bold shadow-sm shadow-indigo-600/30 group-hover:scale-105 transition-transform">
-              <span className="text-sm font-black">D</span>
+            <div 
+              className="w-8 h-8 rounded-lg flex items-center justify-center text-white font-bold shadow-sm group-hover:scale-105 transition-all"
+              style={{ backgroundColor: activeOrg.themeColor || '#dc2626' }}
+            >
+              <span className="text-sm font-black">{activeOrg.name.charAt(0)}</span>
             </div>
             <div className="hidden sm:block">
               <div className="flex items-center gap-2">
                 <span className="font-bold text-base tracking-tight text-slate-900 dark:text-white">
                   CommunityOS
                 </span>
-                <span className="px-2 py-0.5 bg-emerald-100 dark:bg-emerald-950 text-emerald-700 dark:text-emerald-300 text-[10px] font-bold rounded-full border border-emerald-200 dark:border-emerald-800">
-                  LIVE DATA
+                <span className="hidden lg:inline-flex items-center gap-1.5 text-xs text-slate-500 dark:text-slate-400 font-medium">
+                  <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                  <span>Enterprise</span>
                 </span>
               </div>
             </div>
@@ -125,10 +134,10 @@ export const Navbar: React.FC<NavbarProps> = ({
           {onGoHome && (
             <button
               onClick={onGoHome}
-              className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800/80 text-rose-700 dark:text-rose-300 text-xs font-bold hover:bg-rose-100 dark:hover:bg-rose-900/60 transition-colors"
+              className="hidden md:flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-700 dark:text-slate-200 text-xs font-semibold transition-colors"
               title="Return to Organization Landing Portal"
             >
-              <Building2 className="w-3.5 h-3.5 text-rose-500" />
+              <Building2 className="w-3.5 h-3.5 text-slate-500" />
               <span>Portal Home</span>
             </button>
           )}
@@ -142,8 +151,11 @@ export const Navbar: React.FC<NavbarProps> = ({
               onClick={() => setShowOrgDropdown(!showOrgDropdown)}
               className="flex items-center gap-2 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-all"
             >
-              <Building2 className="w-3.5 h-3.5 text-indigo-600 dark:text-indigo-400" />
-              <span className="max-w-[140px] sm:max-w-[180px] truncate">{activeOrg.name}</span>
+              <span 
+                className="w-2 h-2 rounded-full shrink-0"
+                style={{ backgroundColor: activeOrg.themeColor || '#dc2626' }}
+              />
+              <span className="max-w-[130px] sm:max-w-[170px] truncate">{activeOrg.name}</span>
               <ChevronDown className="w-3.5 h-3.5 text-slate-400" />
             </button>
 
@@ -154,8 +166,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                     {isSuperAdmin ? 'All Organizations (Super Admin)' : 'Authorized Tenant Domain'}
                   </span>
                   {!isSuperAdmin && (
-                    <span className="text-[9px] px-1.5 py-0.5 rounded bg-rose-500/10 border border-rose-500/30 text-rose-600 dark:text-rose-400 font-extrabold uppercase">
-                      Tenant Isolated
+                    <span className="text-[10px] text-slate-400 font-medium">
+                      Multi-Tenant Isolated
                     </span>
                   )}
                 </div>
@@ -169,15 +181,21 @@ export const Navbar: React.FC<NavbarProps> = ({
                       }}
                       className={`w-full text-left px-3 py-2 rounded-lg text-xs flex items-center justify-between transition-colors ${
                         activeOrg.id === org.id
-                          ? 'bg-indigo-50 dark:bg-indigo-950/50 text-indigo-700 dark:text-indigo-300 font-semibold'
+                          ? 'bg-slate-100 dark:bg-slate-800/80 font-bold'
                           : 'hover:bg-slate-100 dark:hover:bg-slate-800 text-slate-600 dark:text-slate-300'
                       }`}
                     >
-                      <div className="truncate">
-                        <p className="font-medium truncate">{org.name}</p>
-                        <p className="text-[10px] text-slate-400 truncate">{org.websiteDomain}</p>
+                      <div className="truncate flex items-center gap-2">
+                        <span 
+                          className="w-2.5 h-2.5 rounded-full shrink-0" 
+                          style={{ backgroundColor: org.themeColor || '#dc2626' }}
+                        />
+                        <div className="truncate">
+                          <p className="font-medium truncate">{org.name}</p>
+                          <p className="text-[10px] text-slate-400 truncate">{org.websiteDomain}</p>
+                        </div>
                       </div>
-                      <span className="text-[10px] px-2 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 whitespace-nowrap ml-2">
+                      <span className="text-[10px] px-1.5 py-0.5 rounded bg-slate-200 dark:bg-slate-800 text-slate-600 dark:text-slate-400 whitespace-nowrap ml-2">
                         {org.type}
                       </span>
                     </button>
@@ -190,7 +208,8 @@ export const Navbar: React.FC<NavbarProps> = ({
                         setShowOrgDropdown(false);
                         onGoHome();
                       }}
-                      className="w-full py-2 px-3 rounded-lg bg-rose-600 hover:bg-rose-700 text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+                      className="w-full py-2 px-3 rounded-lg text-white font-bold text-xs flex items-center justify-center gap-1.5 transition-colors shadow-sm"
+                      style={{ backgroundColor: activeOrg.themeColor || '#dc2626' }}
                     >
                       <Building2 className="w-3.5 h-3.5" />
                       <span>Switch Organization / Portal Home</span>
@@ -213,6 +232,22 @@ export const Navbar: React.FC<NavbarProps> = ({
               </div>
             )}
           </div>
+
+          {/* Community Color Theme Chooser Button */}
+          {onOpenThemeModal && (
+            <button
+              id="btn-community-theme-picker"
+              onClick={onOpenThemeModal}
+              className="flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 hover:bg-slate-100 dark:hover:bg-slate-800 text-xs font-semibold text-slate-700 dark:text-slate-200 transition-all cursor-pointer shadow-xs group"
+              title="Customize Community Theme & Background Color for Whole App"
+            >
+              <span 
+                className="w-3.5 h-3.5 rounded-full ring-2 ring-white/80 dark:ring-slate-900 shadow-xs shrink-0 transition-transform group-hover:scale-110" 
+                style={{ backgroundColor: activeOrg.themeColor || '#dc2626' }}
+              />
+              <span className="hidden md:inline font-semibold">Community Color</span>
+            </button>
+          )}
         </div>
 
         {/* Global AI Search Input */}
@@ -234,22 +269,11 @@ export const Navbar: React.FC<NavbarProps> = ({
           {/* Public Citizen Portal Shortcut */}
           <button
             id="btn-nav-citizen-portal"
-            onClick={() => onNavigateModule('citizen-portal')}
-            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-semibold hover:bg-emerald-100 dark:hover:bg-emerald-900/60 transition-colors"
+            onClick={() => onNavigateModule?.('citizen-portal')}
+            className="hidden sm:flex items-center gap-1.5 px-3 py-1.5 rounded-lg border border-slate-200 dark:border-slate-800 bg-slate-50 dark:bg-slate-800/60 text-slate-700 dark:text-slate-300 text-xs font-semibold hover:bg-slate-100 dark:hover:bg-slate-800 transition-colors"
           >
-            <Globe className="w-3.5 h-3.5 text-emerald-600 dark:text-emerald-400" />
+            <Globe className="w-3.5 h-3.5 text-slate-500" />
             <span>Citizen Portal</span>
-          </button>
-
-          {/* AI Grounded Assistant Button */}
-          <button
-            id="btn-nav-ai-chat"
-            onClick={onOpenAIChat}
-            className="flex items-center gap-1.5 px-3.5 py-1.5 rounded-lg bg-indigo-600 hover:bg-indigo-700 text-white text-xs font-bold shadow-md shadow-indigo-600/20 transition-all"
-          >
-            <Sparkles className="w-3.5 h-3.5 text-emerald-300" />
-            <span className="hidden sm:inline">AI Assistant</span>
-            <span className="sm:hidden">AI</span>
           </button>
 
           {/* QR Scanner Trigger */}

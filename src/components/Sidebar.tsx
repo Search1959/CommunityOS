@@ -23,6 +23,8 @@ import {
   Menu, 
   X 
 } from 'lucide-react';
+import { Organization } from '../types';
+import { MobileMenuCards } from './MobileMenuCards';
 
 interface SidebarProps {
   activeModule: string;
@@ -30,6 +32,7 @@ interface SidebarProps {
   isOpenMobile: boolean;
   onToggleMobile: () => void;
   activeOrgType: string;
+  activeOrg?: Organization;
 }
 
 export const Sidebar: React.FC<SidebarProps> = ({
@@ -38,7 +41,26 @@ export const Sidebar: React.FC<SidebarProps> = ({
   isOpenMobile,
   onToggleMobile,
   activeOrgType,
+  activeOrg,
 }) => {
+  const defaultOrg: Organization = activeOrg || {
+    id: 'org-1',
+    name: 'Ekdalia Evergreen Durga Puja & Welfare Committee',
+    slug: 'ekdalia-evergreen',
+    type: 'Puja & Festival Committee',
+    registrationNo: 'S/12890/2005',
+    panNo: 'AAATE4521P',
+    darpanId: 'WB/2021/0289451',
+    taxExemption80G: 'CIT(E)/KOL/80G/2021-22/A/104',
+    taxExemption12A: 'CIT(E)/KOL/12A/2021-22/A/89',
+    establishedYear: 1943,
+    address: '15, Ekdalia Road, Gariahat, Kolkata - 700019',
+    phone: '+91 33 2460 1943',
+    email: 'contact@ekdaliaevergreen.org',
+    membersCount: 420,
+    totalDonationsYTD: 2850000,
+    welfareFundsDisbursed: 1420000,
+  };
   const menuItems = [
     { key: 'dashboard', label: 'Analytics Dashboard', icon: LayoutDashboard },
     { key: 'org-profile', label: 'Organization Profile', icon: Building2 },
@@ -46,7 +68,7 @@ export const Sidebar: React.FC<SidebarProps> = ({
     { key: 'committee', label: 'Committee & Meetings', icon: Award },
     { key: 'welfare', label: 'Welfare Schemes', icon: HeartHandshake },
     { key: 'donations', label: 'Donations & 80G Receipts', icon: IndianRupee },
-    { key: 'finance', label: 'Finance & Cash Book', icon: Receipt },
+    { key: 'finance', label: 'Expenses & Financial Dashboard', icon: Receipt },
     { key: 'events', label: 'Events & Puja Pandal', icon: Calendar },
     { key: 'school', label: 'School Management', icon: GraduationCap, highlight: activeOrgType.includes('School') },
     { key: 'vault', label: 'AI Document Intelligence', icon: FileText, badge: 'AI' },
@@ -69,12 +91,15 @@ export const Sidebar: React.FC<SidebarProps> = ({
       <div className="p-5 border-b border-slate-800">
         <div className="flex items-center justify-between">
           <div className="flex items-center gap-2.5">
-            <div className="w-8 h-8 bg-indigo-600 rounded-lg flex items-center justify-center font-bold text-white shadow-md shadow-indigo-600/30">
-              D
+            <div 
+              className="w-8 h-8 rounded-lg flex items-center justify-center font-bold text-white shadow-md transition-all"
+              style={{ backgroundColor: activeOrg?.themeColor || '#dc2626' }}
+            >
+              {activeOrg?.name ? activeOrg.name.charAt(0) : 'D'}
             </div>
             <div>
-              <h1 className="text-base font-bold text-white tracking-tight leading-none">CommunityOS</h1>
-              <p className="text-[10px] text-slate-500 uppercase tracking-widest mt-1 font-semibold">Enterprise Suite</p>
+              <h1 className="text-sm font-bold text-white tracking-tight leading-none">CommunityOS</h1>
+              <p className="text-[10px] text-slate-400 uppercase tracking-widest mt-1 font-semibold">Institutional Suite</p>
             </div>
           </div>
           <button
@@ -101,20 +126,40 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onSelectModule(item.key);
                 if (isOpenMobile) onToggleMobile();
               }}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-all ${
+              style={
                 isActive
-                  ? 'bg-indigo-600/15 text-indigo-400 font-semibold border border-indigo-500/30'
+                  ? {
+                      backgroundColor: 'var(--community-badge-bg, rgba(220,38,38,0.15))',
+                      color: 'var(--community-text-accent, #ef4444)',
+                      borderColor: 'var(--community-border, rgba(220,38,38,0.3))',
+                    }
+                  : {}
+              }
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                isActive
+                  ? 'font-semibold border shadow-xs'
                   : item.highlight
-                  ? 'bg-indigo-950/40 text-indigo-300 hover:bg-slate-900 border border-indigo-900/50'
+                  ? 'bg-slate-900/60 text-slate-200 hover:bg-slate-900 border border-slate-800'
                   : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
               }`}
             >
               <div className="flex items-center gap-2.5 truncate">
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-indigo-400' : 'text-slate-400'}`} />
+                <Icon 
+                  className={`w-4 h-4 shrink-0 transition-colors ${
+                    isActive ? '' : 'text-slate-400'
+                  }`} 
+                  style={isActive ? { color: 'var(--community-color, #dc2626)' } : {}}
+                />
                 <span className="truncate">{item.label}</span>
               </div>
               {item.badge && (
-                <span className="text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider bg-indigo-500/20 text-indigo-300 border border-indigo-500/30">
+                <span 
+                  className="text-[9px] font-bold px-1.5 py-0.5 rounded tracking-wider border border-white/10"
+                  style={{
+                    backgroundColor: 'rgba(255,255,255,0.06)',
+                    color: isActive ? 'var(--community-text-accent)' : '#94a3b8'
+                  }}
+                >
                   {item.badge}
                 </span>
               )}
@@ -135,23 +180,38 @@ export const Sidebar: React.FC<SidebarProps> = ({
                 onSelectModule(item.key);
                 if (isOpenMobile) onToggleMobile();
               }}
-              className={`w-full flex items-center justify-between px-3 py-2 rounded-md text-xs font-medium transition-all ${
+              style={
                 isActive
-                  ? 'bg-indigo-600/15 text-indigo-400 font-semibold border border-indigo-500/30'
+                  ? {
+                      backgroundColor: 'var(--community-badge-bg, rgba(220,38,38,0.15))',
+                      color: 'var(--community-text-accent, #ef4444)',
+                      borderColor: 'var(--community-border, rgba(220,38,38,0.3))',
+                    }
+                  : {}
+              }
+              className={`w-full flex items-center justify-between px-3 py-2 rounded-lg text-xs font-medium transition-all ${
+                isActive
+                  ? 'font-semibold border shadow-xs'
                   : 'text-slate-400 hover:bg-slate-900 hover:text-slate-200'
               }`}
             >
               <div className="flex items-center gap-2.5 truncate">
-                <Icon className={`w-4 h-4 shrink-0 ${isActive ? 'text-indigo-400' : item.badge === 'AI' ? 'text-emerald-400' : 'text-slate-400'}`} />
+                <Icon 
+                  className={`w-4 h-4 shrink-0 transition-colors ${
+                    isActive ? '' : item.badge === 'AI' ? 'text-emerald-400' : 'text-slate-400'
+                  }`} 
+                  style={isActive ? { color: 'var(--community-color, #dc2626)' } : {}}
+                />
                 <span className="truncate">{item.label}</span>
               </div>
               {item.badge && (
                 <span
-                  className={`text-[9px] font-bold px-1.5 py-0.5 rounded uppercase tracking-wider ${
-                    item.badge === 'AI'
-                      ? 'bg-emerald-500/20 text-emerald-300 border border-emerald-500/30'
-                      : 'bg-indigo-500/20 text-indigo-300 border border-indigo-500/30'
-                  }`}
+                  className="text-[9px] font-bold px-1.5 py-0.5 rounded tracking-wider border"
+                  style={{
+                    backgroundColor: item.badge === 'AI' ? 'rgba(16, 185, 129, 0.15)' : 'rgba(255,255,255,0.06)',
+                    borderColor: item.badge === 'AI' ? 'rgba(16, 185, 129, 0.3)' : 'rgba(255,255,255,0.1)',
+                    color: item.badge === 'AI' ? '#34d399' : '#94a3b8'
+                  }}
                 >
                   {item.badge}
                 </span>
@@ -185,18 +245,14 @@ export const Sidebar: React.FC<SidebarProps> = ({
         {sidebarContent}
       </aside>
 
-      {/* Mobile Drawer */}
-      {isOpenMobile && (
-        <div className="fixed inset-0 z-50 lg:hidden flex">
-          <div 
-            onClick={onToggleMobile} 
-            className="fixed inset-0 bg-slate-950/80 backdrop-blur-sm animate-in fade-in duration-200" 
-          />
-          <div className="relative z-10 w-64 h-full animate-in slide-in-from-left duration-200">
-            {sidebarContent}
-          </div>
-        </div>
-      )}
+      {/* Mobile Menu Cards System */}
+      <MobileMenuCards
+        isOpen={isOpenMobile}
+        onClose={onToggleMobile}
+        activeModule={activeModule}
+        onSelectModule={onSelectModule}
+        activeOrg={defaultOrg}
+      />
     </>
   );
 };

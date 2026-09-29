@@ -138,9 +138,9 @@ export const LandingHomePage: React.FC<LandingHomePageProps> = ({
         <div className="absolute top-1/3 left-1/4 w-[400px] h-[300px] bg-purple-600/10 blur-[100px] rounded-full pointer-events-none" />
 
         <div className="max-w-5xl mx-auto px-4 text-center relative z-10 space-y-6">
-          <div className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-full bg-amber-500/10 border border-amber-500/30 text-amber-300 text-xs font-extrabold">
-            <Sparkles className="w-3.5 h-3.5 text-amber-400" />
-            <span>Secure Multi-Tenant Enterprise SaaS Network</span>
+          <div className="inline-flex items-center gap-2 text-xs font-medium text-slate-400">
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+            <span>Multi-Tenant Community Operating System</span>
           </div>
 
           <h2 className="text-3xl sm:text-5xl font-black tracking-tight text-white max-w-3xl mx-auto leading-tight">
@@ -286,9 +286,10 @@ export const LandingHomePage: React.FC<LandingHomePageProps> = ({
                 <div className="p-5 pt-0">
                   <button
                     onClick={() => handleOpenLogin(org)}
-                    className="w-full py-2.5 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-extrabold text-xs shadow-lg shadow-rose-950/40 flex items-center justify-center gap-2 transition-all"
+                    className="w-full py-2.5 rounded-xl text-white font-extrabold text-xs shadow-md flex items-center justify-center gap-2 transition-all hover:opacity-95 cursor-pointer"
+                    style={{ backgroundColor: org.themeColor || '#dc2626' }}
                   >
-                    <KeyRound className="w-3.5 h-3.5 text-amber-200" />
+                    <KeyRound className="w-3.5 h-3.5" />
                     <span>Select & Login to Portal</span>
                     <ArrowRight className="w-3.5 h-3.5" />
                   </button>
@@ -366,9 +367,10 @@ export const LandingHomePage: React.FC<LandingHomePageProps> = ({
 
               <button
                 type="submit"
-                className="w-full py-3 rounded-xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-500 hover:to-amber-500 text-white font-extrabold text-xs shadow-lg shadow-rose-950/50 flex items-center justify-center gap-2 transition-all mt-2"
+                className="w-full py-3 rounded-xl text-white font-extrabold text-xs shadow-lg flex items-center justify-center gap-2 transition-all mt-2 hover:opacity-95 cursor-pointer"
+                style={{ backgroundColor: selectedOrgForLogin.themeColor || '#dc2626' }}
               >
-                <Lock className="w-4 h-4 text-amber-200" />
+                <Lock className="w-4 h-4 text-white" />
                 <span>Authenticate & Open Portal</span>
               </button>
             </form>

@@ -1145,6 +1145,26 @@ export const SuperAdminModule: React.FC<SuperAdminModuleProps> = ({
                 />
               </div>
 
+              <div>
+                <label className="block text-slate-500 font-medium mb-1">Banner Image URL / Visual Asset</label>
+                <div className="flex gap-2">
+                  <input
+                    type="text"
+                    value={editingOrg.bannerUrl}
+                    onChange={(e) => setEditingOrg({ ...editingOrg, bannerUrl: e.target.value })}
+                    placeholder="/aryasamaj_banner.svg or image URL"
+                    className="flex-1 p-2 rounded-xl bg-slate-50 dark:bg-slate-800 border border-slate-200 dark:border-slate-700 font-medium text-xs"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setEditingOrg({ ...editingOrg, bannerUrl: '/aryasamaj_banner.svg' })}
+                    className="px-2.5 py-1.5 rounded-xl bg-amber-500/10 border border-amber-500/30 text-amber-600 dark:text-amber-400 font-bold text-[11px] hover:bg-amber-500/20 whitespace-nowrap cursor-pointer"
+                  >
+                    Set Arya Samaj Mandir Banner
+                  </button>
+                </div>
+              </div>
+
               <div className="flex gap-2 pt-2">
                 <button
                   type="button"

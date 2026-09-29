@@ -16,50 +16,70 @@ import {
   User,
   Users,
   Globe,
-  Coins
+  Coins,
+  UserPlus
 } from 'lucide-react';
 import { UserCredential, Organization, UserRole } from '../types';
 
 interface LoginModalProps {
   userCredentials: UserCredential[];
-  currentCredential: UserCredential | null;
-  organizations: Organization[];
-  onSelectCredential: (cred: UserCredential) => void;
+  currentCredential?: UserCredential | null;
+  currentUserCredential?: UserCredential | null;
+  organizations?: Organization[];
+  onSelectCredential?: (cred: UserCredential) => void;
+  onLoginSuccess?: (cred: UserCredential) => void;
+  onAddCredential?: (newCred: UserCredential) => void;
   onClose?: () => void;
-  isOpen: boolean;
+  isOpen?: boolean;
 }
 
 export const LoginModal: React.FC<LoginModalProps> = ({
   userCredentials,
   currentCredential,
-  organizations,
+  currentUserCredential,
+  organizations = [],
   onSelectCredential,
+  onLoginSuccess,
+  onAddCredential,
   onClose,
-  isOpen
+  isOpen = true
 }) => {
-  const [activeTab, setActiveTab] = useState<'login' | 'presets' | 'hierarchy'>('login');
+  const activeUser = currentCredential || currentUserCredential || null;
+  const handleLoginDispatch = onLoginSuccess || onSelectCredential || (() => {});
+
+  const [activeTab, setActiveTab] = useState<'login' | 'register' | 'presets' | 'hierarchy'>('login');
   const [usernameInput, setUsernameInput] = useState('');
   const [passwordInput, setPasswordInput] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errorMessage, setErrorMessage] = useState('');
   const [successMsg, setSuccessMsg] = useState('');
 
-  if (!isOpen) return null;
+  // Register state
+  const [regName, setRegName] = useState('');
+  const [regUsername, setRegUsername] = useState('');
+  const [regEmail, setRegEmail] = useState('');
+  const [regPassword, setRegPassword] = useState('');
+  const [regPhone, setRegPhone] = useState('');
+  const [regOrgId, setRegOrgId] = useState(organizations[0]?.id || 'org-1');
+  const [regRole, setRegRole] = useState<UserRole>('Committee Admin');
+
+  if (isOpen === false) return null;
 
   const handleManualLogin = (e: React.FormEvent) => {
     e.preventDefault();
     setErrorMessage('');
     setSuccessMsg('');
 
+    const query = usernameInput.trim().toLowerCase();
     const targetCred = userCredentials.find(
       (c) =>
-        (c.username.toLowerCase() === usernameInput.trim().toLowerCase() ||
-         c.email.toLowerCase() === usernameInput.trim().toLowerCase()) &&
+        (c.username.toLowerCase() === query ||
+         c.email.toLowerCase() === query) &&
         c.passwordHash === passwordInput
     );
 
     if (!targetCred) {
-      setErrorMessage('Invalid username/email or password. Try sysadmin / admin123 or select a Quick Preset.');
+      setErrorMessage('Invalid username/email or password. Try sysadmin / admin123, or use Quick Presets / Create New Login tab.');
       return;
     }
 
@@ -68,19 +88,71 @@ export const LoginModal: React.FC<LoginModalProps> = ({
       return;
     }
 
-    onSelectCredential(targetCred);
+    handleLoginDispatch(targetCred);
     setSuccessMsg(`Welcome back, ${targetCred.name}! Logged in as [Level ${targetCred.hierarchyLevel}: ${targetCred.role}]`);
     setTimeout(() => {
       if (onClose) onClose();
-    }, 800);
+    }, 600);
   };
 
   const handleQuickPresetSelect = (cred: UserCredential) => {
-    onSelectCredential(cred);
+    handleLoginDispatch(cred);
     setSuccessMsg(`Switched to ${cred.name} (${cred.role})`);
     setTimeout(() => {
       if (onClose) onClose();
-    }, 600);
+    }, 500);
+  };
+
+  const handleRegisterSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    setErrorMessage('');
+    setSuccessMsg('');
+
+    if (!regName.trim() || !regUsername.trim() || !regPassword.trim()) {
+      setErrorMessage('Please fill in Name, Username and Password.');
+      return;
+    }
+
+    const trimmedUser = regUsername.trim().toLowerCase();
+    const existing = userCredentials.find(c => c.username.toLowerCase() === trimmedUser);
+    if (existing) {
+      setErrorMessage(`Username '${regUsername}' is already taken. Please pick another username or login.`);
+      return;
+    }
+
+    const selectedOrgObj = organizations.find(o => o.id === regOrgId) || organizations[0];
+    let level: 1 | 2 | 3 | 4 | 5 = 4;
+    if (regRole === 'Super Admin') level = 1;
+    else if (['Committee Admin', 'President', 'Secretary', 'School Admin'].includes(regRole)) level = 2;
+    else if (['Treasurer', 'Executive Member', 'Teacher', 'Volunteer'].includes(regRole)) level = 3;
+    else if (['Member', 'Parent', 'Student'].includes(regRole)) level = 4;
+    else level = 5;
+
+    const newCred: UserCredential = {
+      id: `cred-${Date.now()}`,
+      name: regName.trim(),
+      email: regEmail.trim() || `${trimmedUser}@communityos.in`,
+      username: trimmedUser,
+      passwordHash: regPassword.trim(),
+      role: regRole,
+      orgId: regRole === 'Super Admin' ? 'all' : (selectedOrgObj?.id || 'org-1'),
+      orgName: regRole === 'Super Admin' ? 'All System Tenants' : (selectedOrgObj?.name || 'Community Association'),
+      status: 'Active',
+      hierarchyLevel: level,
+      createdAt: new Date().toISOString().split('T')[0],
+      phone: regPhone.trim() || '+91 98000 00000',
+      avatarUrl: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&q=80&w=200'
+    };
+
+    if (onAddCredential) {
+      onAddCredential(newCred);
+    }
+
+    handleLoginDispatch(newCred);
+    setSuccessMsg(`Account created and saved to cloud database! Welcome, ${newCred.name}!`);
+    setTimeout(() => {
+      if (onClose) onClose();
+    }, 700);
   };
 
   return (
@@ -103,7 +175,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
 
         {/* Header */}
         <div className="flex items-center gap-3">
-          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center text-white font-black shadow-lg shadow-rose-500/30">
+          <div className="w-12 h-12 rounded-2xl bg-gradient-to-tr from-rose-600 to-amber-500 flex items-center justify-center text-white font-black shadow-lg shadow-rose-500/30 shrink-0">
             <ShieldCheck className="w-7 h-7" />
           </div>
           <div>
@@ -111,21 +183,22 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               <h2 className="text-xl font-black tracking-tight text-slate-900 dark:text-white">
                 CommunityOS Portal Login
               </h2>
-              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-rose-100 text-rose-700 dark:bg-rose-950/80 dark:text-rose-300">
-                Hierarchy Secured
+              <span className="px-2 py-0.5 rounded-full text-[10px] font-bold bg-emerald-100 text-emerald-700 dark:bg-emerald-950/80 dark:text-emerald-300 flex items-center gap-1">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-500 animate-pulse" />
+                Live Cloud Sync
               </span>
             </div>
             <p className="text-xs text-slate-500 dark:text-slate-400">
-              Role-Based Multi-Tenant Authentication & System Admin Credentials Control
+              Role-Based Multi-Tenant Authentication & Cloud Database Access
             </p>
           </div>
         </div>
 
         {/* Navigation Tabs */}
-        <div className="flex border-b border-slate-200 dark:border-slate-800 text-xs font-bold gap-2">
+        <div className="flex border-b border-slate-200 dark:border-slate-800 text-xs font-bold gap-2 overflow-x-auto pb-1">
           <button
-            onClick={() => setActiveTab('login')}
-            className={`pb-3 px-3 transition-colors border-b-2 flex items-center gap-1.5 ${
+            onClick={() => { setActiveTab('login'); setErrorMessage(''); }}
+            className={`pb-3 px-3 transition-colors border-b-2 flex items-center gap-1.5 shrink-0 ${
               activeTab === 'login'
                 ? 'border-rose-600 text-rose-600 dark:text-rose-400'
                 : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'
@@ -136,27 +209,39 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           </button>
 
           <button
-            onClick={() => setActiveTab('presets')}
-            className={`pb-3 px-3 transition-colors border-b-2 flex items-center gap-1.5 ${
+            onClick={() => { setActiveTab('register'); setErrorMessage(''); }}
+            className={`pb-3 px-3 transition-colors border-b-2 flex items-center gap-1.5 shrink-0 ${
+              activeTab === 'register'
+                ? 'border-rose-600 text-rose-600 dark:text-rose-400'
+                : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'
+            }`}
+          >
+            <UserPlus className="w-3.5 h-3.5 text-indigo-500" />
+            <span>Create / Register Login</span>
+          </button>
+
+          <button
+            onClick={() => { setActiveTab('presets'); setErrorMessage(''); }}
+            className={`pb-3 px-3 transition-colors border-b-2 flex items-center gap-1.5 shrink-0 ${
               activeTab === 'presets'
                 ? 'border-rose-600 text-rose-600 dark:text-rose-400'
                 : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <Sparkles className="w-3.5 h-3.5 text-amber-500" />
-            <span>Quick 1-Click Role Switcher ({userCredentials.length})</span>
+            <span>Role Switcher ({userCredentials.length})</span>
           </button>
 
           <button
-            onClick={() => setActiveTab('hierarchy')}
-            className={`pb-3 px-3 transition-colors border-b-2 flex items-center gap-1.5 ${
+            onClick={() => { setActiveTab('hierarchy'); setErrorMessage(''); }}
+            className={`pb-3 px-3 transition-colors border-b-2 flex items-center gap-1.5 shrink-0 ${
               activeTab === 'hierarchy'
                 ? 'border-rose-600 text-rose-600 dark:text-rose-400'
                 : 'border-transparent text-slate-500 hover:text-slate-900 dark:hover:text-white'
             }`}
           >
             <Users className="w-3.5 h-3.5 text-indigo-500" />
-            <span>Role Hierarchy Tree</span>
+            <span>Hierarchy Tree</span>
           </button>
         </div>
 
@@ -188,7 +273,7 @@ export const LoginModal: React.FC<LoginModalProps> = ({
                   required
                   value={usernameInput}
                   onChange={(e) => setUsernameInput(e.target.value)}
-                  placeholder="e.g. sysadmin or president_ekdalia"
+                  placeholder="e.g. arunarya, sysadmin, president_ekdalia"
                   className="w-full pl-9 pr-4 py-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs font-medium text-slate-900 dark:text-white placeholder-slate-400 outline-none focus:border-rose-500 transition-colors"
                 />
               </div>
@@ -224,16 +309,17 @@ export const LoginModal: React.FC<LoginModalProps> = ({
               </span>
               <button
                 type="button"
-                onClick={() => alert('For password resets, contact your System Administrator (admin@communityos.in) or login as sysadmin.')}
-                className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline"
+                onClick={() => setActiveTab('register')}
+                className="font-bold text-indigo-600 dark:text-indigo-400 hover:underline flex items-center gap-1"
               >
-                Forgot Password?
+                <span>New here? Register Login</span>
+                <ArrowRight className="w-3 h-3" />
               </button>
             </div>
 
             <button
               type="submit"
-              className="w-full py-3 rounded-2xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-700 hover:to-amber-700 text-white font-extrabold text-xs shadow-lg shadow-rose-600/30 transition-all flex items-center justify-center gap-2"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-rose-600 to-amber-600 hover:from-rose-700 hover:to-amber-700 text-white font-extrabold text-xs shadow-lg shadow-rose-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer"
             >
               <span>Authenticate & Enter System</span>
               <ArrowRight className="w-4 h-4" />
@@ -241,16 +327,141 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           </form>
         )}
 
-        {/* TAB 2: Quick 1-Click Role Presets */}
+        {/* TAB 2: Register New Login Form */}
+        {activeTab === 'register' && (
+          <form onSubmit={handleRegisterSubmit} className="space-y-3.5 text-xs">
+            {errorMessage && (
+              <div className="p-3 rounded-2xl bg-rose-50 dark:bg-rose-950/60 border border-rose-200 dark:border-rose-800 text-rose-700 dark:text-rose-300 text-xs font-semibold flex items-center gap-2">
+                <AlertCircle className="w-4 h-4 shrink-0 text-rose-500" />
+                <span>{errorMessage}</span>
+              </div>
+            )}
+
+            {successMsg && (
+              <div className="p-3 rounded-2xl bg-emerald-50 dark:bg-emerald-950/60 border border-emerald-200 dark:border-emerald-800 text-emerald-700 dark:text-emerald-300 text-xs font-bold flex items-center gap-2">
+                <CheckCircle2 className="w-4 h-4 shrink-0 text-emerald-500" />
+                <span>{successMsg}</span>
+              </div>
+            )}
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Full Name *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={regName}
+                  onChange={(e) => setRegName(e.target.value)}
+                  placeholder="e.g. Arun Jaiswal"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white outline-none focus:border-rose-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Username * (for login)
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={regUsername}
+                  onChange={(e) => setRegUsername(e.target.value)}
+                  placeholder="e.g. arun2026"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white font-mono outline-none focus:border-rose-500"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Password *
+                </label>
+                <input
+                  type="text"
+                  required
+                  value={regPassword}
+                  onChange={(e) => setRegPassword(e.target.value)}
+                  placeholder="e.g. arun123"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white font-mono outline-none focus:border-rose-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Email Address
+                </label>
+                <input
+                  type="email"
+                  value={regEmail}
+                  onChange={(e) => setRegEmail(e.target.value)}
+                  placeholder="e.g. arun@gmail.com"
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white outline-none focus:border-rose-500"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Assigned Community Organization
+                </label>
+                <select
+                  value={regOrgId}
+                  onChange={(e) => setRegOrgId(e.target.value)}
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white outline-none focus:border-rose-500"
+                >
+                  {organizations.map((o) => (
+                    <option key={o.id} value={o.id}>
+                      {o.name}
+                    </option>
+                  ))}
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-[11px] font-bold text-slate-700 dark:text-slate-300 mb-1">
+                  Hierarchy Role Level
+                </label>
+                <select
+                  value={regRole}
+                  onChange={(e) => setRegRole(e.target.value as UserRole)}
+                  className="w-full p-2.5 rounded-xl bg-slate-50 dark:bg-slate-800/80 border border-slate-200 dark:border-slate-700 text-xs text-slate-900 dark:text-white outline-none focus:border-rose-500"
+                >
+                  <option value="Committee Admin">Level 2: Committee Admin / Officer</option>
+                  <option value="President">Level 2: President</option>
+                  <option value="Secretary">Level 2: Secretary</option>
+                  <option value="Treasurer">Level 3: Treasurer</option>
+                  <option value="Executive Member">Level 3: Executive Member</option>
+                  <option value="Member">Level 4: Registered Member</option>
+                  <option value="Public Citizen">Level 5: Public Citizen</option>
+                  <option value="Super Admin">Level 1: Super Admin</option>
+                </select>
+              </div>
+            </div>
+
+            <button
+              type="submit"
+              className="w-full py-3 rounded-2xl bg-gradient-to-r from-indigo-600 to-purple-600 hover:from-indigo-700 hover:to-purple-700 text-white font-extrabold text-xs shadow-lg shadow-indigo-600/30 transition-all flex items-center justify-center gap-2 cursor-pointer mt-2"
+            >
+              <UserPlus className="w-4 h-4" />
+              <span>Save & Authenticate to Database</span>
+            </button>
+          </form>
+        )}
+
+        {/* TAB 3: Quick 1-Click Role Presets */}
         {activeTab === 'presets' && (
           <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1">
             <p className="text-xs text-slate-500">
-              Click any credential below to instantly authenticate into that hierarchy role level:
+              Live synchronized accounts from cloud database. Click any credential below to authenticate immediately:
             </p>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
               {userCredentials.map((cred) => {
-                const isCurrent = currentCredential?.id === cred.id;
+                const isCurrent = activeUser?.id === cred.id;
                 return (
                   <div
                     key={cred.id}
@@ -310,13 +521,13 @@ export const LoginModal: React.FC<LoginModalProps> = ({
           </div>
         )}
 
-        {/* TAB 3: Role Hierarchy Explanation */}
+        {/* TAB 4: Role Hierarchy Explanation */}
         {activeTab === 'hierarchy' && (
           <div className="space-y-3 max-h-[380px] overflow-y-auto pr-1 text-xs">
             <div className="p-3 rounded-2xl bg-indigo-50/80 dark:bg-indigo-950/40 border border-indigo-200 dark:border-indigo-900 text-indigo-900 dark:text-indigo-200 font-medium">
               <p className="font-bold text-xs mb-1">🛡️ System Security & Role Hierarchy Specification</p>
               <p className="text-[11px] leading-relaxed">
-                CommunityOS enforces strict tenant isolation and role permission levels. System Admins maintain master control to provision logins, while Organization Officers manage localized community records.
+                CommunityOS enforces strict tenant isolation and role permission levels. All credentials and administrative changes sync directly to the cloud database on the internet.
               </p>
             </div>
 

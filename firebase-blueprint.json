@@ -1,5 +1,26 @@
 {
   "entities": {
+    "user_credentials": {
+      "title": "User Credentials & Logins",
+      "description": "Multi-tenant role-based user authentication logins and credentials",
+      "properties": {
+        "id": { "type": "string" },
+        "name": { "type": "string" },
+        "email": { "type": "string" },
+        "username": { "type": "string" },
+        "passwordHash": { "type": "string" },
+        "role": { "type": "string" },
+        "orgId": { "type": "string" },
+        "orgName": { "type": "string" },
+        "status": { "type": "string" },
+        "hierarchyLevel": { "type": "number" },
+        "lastLogin": { "type": "string" },
+        "createdAt": { "type": "string" },
+        "avatarUrl": { "type": "string" },
+        "phone": { "type": "string" }
+      },
+      "required": ["id", "username", "passwordHash", "role"]
+    },
     "donations": {
       "title": "Donations",
       "description": "80G and general community donations",
@@ -53,6 +74,52 @@
       },
       "required": ["id", "fullName", "phone"]
     },
+    "schemes": {
+      "title": "Welfare Schemes",
+      "description": "Community assistance and scholarship schemes",
+      "properties": {
+        "id": { "type": "string" },
+        "orgId": { "type": "string" },
+        "title": { "type": "string" },
+        "category": { "type": "string" },
+        "description": { "type": "string" },
+        "budget": { "type": "number" },
+        "disbursed": { "type": "number" },
+        "beneficiariesCount": { "type": "number" },
+        "status": { "type": "string" }
+      },
+      "required": ["id", "title", "category"]
+    },
+    "meetings": {
+      "title": "Committee Meetings",
+      "description": "Executive and AGM committee meeting records",
+      "properties": {
+        "id": { "type": "string" },
+        "orgId": { "type": "string" },
+        "title": { "type": "string" },
+        "date": { "type": "string" },
+        "time": { "type": "string" },
+        "venue": { "type": "string" },
+        "agenda": { "type": "string" },
+        "minutes": { "type": "string" },
+        "attendeesCount": { "type": "number" }
+      },
+      "required": ["id", "title", "date"]
+    },
+    "events": {
+      "title": "Community Events",
+      "description": "Festivals, medical camps, and community assemblies",
+      "properties": {
+        "id": { "type": "string" },
+        "orgId": { "type": "string" },
+        "title": { "type": "string" },
+        "date": { "type": "string" },
+        "venue": { "type": "string" },
+        "description": { "type": "string" },
+        "attendeeCount": { "type": "number" }
+      },
+      "required": ["id", "title", "date"]
+    },
     "vault_documents": {
       "title": "Document Vault",
       "description": "Uploaded statutory and audit documents",
@@ -69,6 +136,21 @@
       },
       "required": ["id", "title", "category"]
     },
+    "audit_reports": {
+      "title": "Audit Reports",
+      "description": "Annual financial audit and statutory compliance records",
+      "properties": {
+        "id": { "type": "string" },
+        "orgId": { "type": "string" },
+        "financialYear": { "type": "string" },
+        "auditorName": { "type": "string" },
+        "totalIncome": { "type": "number" },
+        "totalExpense": { "type": "number" },
+        "surplus": { "type": "number" },
+        "fileUrl": { "type": "string" }
+      },
+      "required": ["id", "financialYear"]
+    },
     "organizations": {
       "title": "SaaS Community Organizations",
       "description": "Multi-tenant registered organizations",
@@ -81,7 +163,8 @@
         "location": { "type": "string" },
         "membersCount": { "type": "number" },
         "totalDonationsYTD": { "type": "number" },
-        "activeSchemesCount": { "type": "number" }
+        "activeSchemesCount": { "type": "number" },
+        "themeColor": { "type": "string" }
       },
       "required": ["id", "name"]
     },
@@ -100,6 +183,52 @@
         "voucherNo": { "type": "string" }
       },
       "required": ["id", "type", "amount", "date"]
+    }
+  },
+  "firestore": {
+    "/userCredentials/{credentialId}": {
+      "schema": "user_credentials",
+      "description": "Role-based user login credentials and hierarchy levels"
+    },
+    "/organizations/{orgId}": {
+      "schema": "organizations",
+      "description": "Multi-tenant organizations and community trusts"
+    },
+    "/members/{memberId}": {
+      "schema": "members",
+      "description": "Registered community members"
+    },
+    "/donations/{donationId}": {
+      "schema": "donations",
+      "description": "Donations with 80G tax certificates"
+    },
+    "/applications/{appId}": {
+      "schema": "applications",
+      "description": "Welfare and scholarship applications"
+    },
+    "/schemes/{schemeId}": {
+      "schema": "schemes",
+      "description": "Active community welfare schemes"
+    },
+    "/meetings/{meetingId}": {
+      "schema": "meetings",
+      "description": "Executive committee and AGM meeting proceedings"
+    },
+    "/events/{eventId}": {
+      "schema": "events",
+      "description": "Community events and festival programs"
+    },
+    "/transactions/{txId}": {
+      "schema": "finance_transactions",
+      "description": "Financial ledger transactions and vouchers"
+    },
+    "/vaultDocs/{docId}": {
+      "schema": "vault_documents",
+      "description": "Document vault with AI OCR extractions"
+    },
+    "/auditReports/{reportId}": {
+      "schema": "audit_reports",
+      "description": "Audited accounts and statutory compliance reports"
     }
   }
 }

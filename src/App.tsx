@@ -29,7 +29,7 @@ import { AIFloatingChatBalloon } from './components/AIFloatingChatBalloon';
 import { CommunityThemeModal } from './components/CommunityThemeModal';
 import { computeThemeVars, applyThemeToDocument } from './lib/theme';
 
-import { subscribeCollection, saveToFirestore } from './lib/firebase';
+import { subscribeCollection, saveToFirestore, deleteFromFirestore } from './lib/firebase';
 
 import {
   INITIAL_ORGANIZATIONS,
@@ -110,7 +110,7 @@ export default function App() {
   const [vaultDocs, setVaultDocs] = useState<VaultDocument[]>(INITIAL_VAULT_DOCS);
   const [auditReports, setAuditReports] = useState<AuditReport[]>(INITIAL_AUDIT_REPORTS);
 
-  // Real-time Firestore sync setup
+  // Real-time Firestore sync setup - keeps all data live and synchronized across the internet
   useEffect(() => {
     const unsubDonations = subscribeCollection('donations', INITIAL_DONATIONS, setDonations);
     const unsubApplications = subscribeCollection('applications', INITIAL_SCHEME_APPLICATIONS, setApplications);
@@ -119,6 +119,17 @@ export default function App() {
     const unsubTransactions = subscribeCollection('transactions', INITIAL_FINANCE_TRANSACTIONS, setTransactions);
     const unsubVault = subscribeCollection('vaultDocs', INITIAL_VAULT_DOCS, setVaultDocs);
     const unsubAuditReports = subscribeCollection('auditReports', INITIAL_AUDIT_REPORTS, setAuditReports);
+    const unsubMeetings = subscribeCollection('meetings', INITIAL_MEETINGS, setMeetings);
+    const unsubEvents = subscribeCollection('events', INITIAL_EVENTS, setEvents);
+
+    const unsubCredentials = subscribeCollection('userCredentials', INITIAL_USER_CREDENTIALS, (creds) => {
+      setUserCredentials(creds);
+      setCurrentUserCredential((curr) => {
+        const found = creds.find((c) => c.id === curr.id || c.username.toLowerCase() === curr.username.toLowerCase());
+        return found || curr;
+      });
+    });
+
     const unsubOrgs = subscribeCollection('organizations', INITIAL_ORGANIZATIONS, (orgs) => {
       const sanitized = orgs.map((o) => {
         if (
@@ -143,6 +154,9 @@ export default function App() {
       unsubTransactions();
       unsubVault();
       unsubAuditReports();
+      unsubMeetings();
+      unsubEvents();
+      unsubCredentials();
       unsubOrgs();
     };
   }, []);
@@ -191,6 +205,7 @@ export default function App() {
     if (activeOrg.id === orgId) {
       setActiveOrg(filtered[0]);
     }
+    deleteFromFirestore('organizations', orgId);
   };
 
   const handleAddMember = (newMem: Member) => {
@@ -205,18 +220,22 @@ export default function App() {
 
   const handleDeleteMember = (memberId: string) => {
     setMembers(members.filter(m => m.id !== memberId));
+    deleteFromFirestore('members', memberId);
   };
 
   const handleAddMeeting = (newM: Meeting) => {
     setMeetings([newM, ...meetings]);
+    saveToFirestore('meetings', newM);
   };
 
   const handleUpdateMeeting = (updatedM: Meeting) => {
     setMeetings(meetings.map(m => m.id === updatedM.id ? updatedM : m));
+    saveToFirestore('meetings', updatedM);
   };
 
   const handleDeleteMeeting = (meetingId: string) => {
     setMeetings(meetings.filter(m => m.id !== meetingId));
+    deleteFromFirestore('meetings', meetingId);
   };
 
   const handleApplyScheme = (newApp: SchemeApplication) => {
@@ -231,6 +250,7 @@ export default function App() {
 
   const handleDeleteApplication = (appId: string) => {
     setApplications(applications.filter(a => a.id !== appId));
+    deleteFromFirestore('applications', appId);
   };
 
   const handleAddScheme = (newScheme: WelfareScheme) => {
@@ -245,6 +265,7 @@ export default function App() {
 
   const handleDeleteScheme = (schemeId: string) => {
     setSchemes(schemes.filter(s => s.id !== schemeId));
+    deleteFromFirestore('schemes', schemeId);
   };
 
   const handleApproveApp = (appId: string) => {
@@ -279,6 +300,7 @@ export default function App() {
 
   const handleDeleteDonation = (donationId: string) => {
     setDonations(donations.filter(d => d.id !== donationId));
+    deleteFromFirestore('donations', donationId);
   };
 
   const handleAddTransaction = (newTx: FinanceTransaction) => {
@@ -293,14 +315,22 @@ export default function App() {
 
   const handleDeleteTransaction = (txId: string) => {
     setTransactions(transactions.filter(t => t.id !== txId));
+    deleteFromFirestore('transactions', txId);
+  };
+
+  const handleAddEvent = (newEvt: EventItem) => {
+    setEvents([newEvt, ...events]);
+    saveToFirestore('events', newEvt);
   };
 
   const handleUpdateEvent = (updatedEvt: EventItem) => {
     setEvents(events.map(e => e.id === updatedEvt.id ? updatedEvt : e));
+    saveToFirestore('events', updatedEvt);
   };
 
   const handleDeleteEvent = (eventId: string) => {
     setEvents(events.filter(e => e.id !== eventId));
+    deleteFromFirestore('events', eventId);
   };
 
   // Backend API Call for OCR Document Extraction
@@ -352,6 +382,7 @@ export default function App() {
 
   const handleDeleteDoc = (docId: string) => {
     setVaultDocs(vaultDocs.filter(d => d.id !== docId));
+    deleteFromFirestore('vaultDocs', docId);
   };
 
   const handleAddReport = (newReport: AuditReport) => {
@@ -366,6 +397,7 @@ export default function App() {
 
   const handleDeleteReport = (reportId: string) => {
     setAuditReports(auditReports.filter(r => r.id !== reportId));
+    deleteFromFirestore('auditReports', reportId);
   };
 
   // Backend API Call for AI RAG Chat
@@ -464,6 +496,7 @@ export default function App() {
 
   const handleDeleteCredential = (credId: string) => {
     setUserCredentials((prev) => prev.filter((c) => c.id !== credId));
+    deleteFromFirestore('userCredentials', credId);
   };
 
   // Tenant Isolation: Filter datasets by activeOrg.id or activeOrg.slug
@@ -542,6 +575,7 @@ export default function App() {
         organizations={organizations}
         userCredentials={userCredentials}
         onLogin={handlePortalLogin}
+        onAddCredential={handleAddCredential}
       />
     );
   }
@@ -774,7 +808,9 @@ export default function App() {
         <LoginModal
           userCredentials={userCredentials}
           currentUserCredential={currentUserCredential}
+          organizations={organizations}
           onLoginSuccess={handleLoginSuccess}
+          onAddCredential={handleAddCredential}
           onClose={() => setShowLoginModal(false)}
         />
       )}
